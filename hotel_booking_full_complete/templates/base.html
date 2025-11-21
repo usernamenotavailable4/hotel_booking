@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Hotel Booking{% endblock %}</title>
+
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<nav class="bg-white shadow-md p-4">
+    <div class="container mx-auto flex justify-between items-center">
+        <a href="/" class="text-2xl font-bold">HotelBooking</a>
+
+        <div>
+            <a href="/hotels/" class="mr-4 text-blue-600">Hotels</a>
+
+            {% if request.session.user_id %}
+                <a href="/logout/" class="px-4 py-2 bg-red-500 text-white rounded">Logout</a>
+            {% else %}
+                <a href="/login/" class="px-4 py-2 bg-blue-500 text-white rounded">Login</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<div class="container mx-auto mt-10">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
