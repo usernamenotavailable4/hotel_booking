@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YOYO Hotels — Home</title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans">
+  <!-- Navbar -->
+  <nav class="flex items-center justify-between p-6 bg-white shadow">
+    <a href="/" class="text-2xl font-bold text-blue-700 nav-link">YOYO Hotels</a>
+    <div class="flex gap-4">
+      <a href="/" class="text-gray-600 hover:text-blue-600 nav-link">← Back to Search</a>
+      <a class="text-gray-600 hover:text-blue-600 nav-link">Bookings</a>
+      <a href="#login" class="px-4 py-2 bg-blue-600 text-white rounded-lg nav-link">Login</a>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section h-[70vh] bg-cover bg-center flex items-center justify-center"
+    style="background-image: url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=1400&auto=format&fit=crop');">
+    <div class="bg-black bg-opacity-50 p-10 rounded-xl text-center text-white max-w-2xl">
+      <h2 class="text-4xl font-bold mb-4 fade-in">Find &amp; Book Your Ideal Stay</h2>
+      <p class="mb-6 fade-in">Compare real-time prices, availability, and ratings. Book with confidence.</p>
+      <!-- Search Bar -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-4 rounded-xl text-black fade-in">
+        <input placeholder="City / Hotel" class="p-3 border rounded-md" id="city_input" />
+        <input type="date" class="p-3 border rounded-md" id="date_input" />
+        <select class="p-3 border rounded-md" id="adults_input">
+          <option value="1">1 Adult</option>
+          <option value="2" selected>2 Adults</option>
+          <option value="3">3 Adults</option>
+          <option value="4">4 Adults</option>
+        </select>
+        <button class="bg-blue-600 text-white rounded-md p-3 font-semibold btn-primary" type="button"
+          id="search_button">Search</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Filters + Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-6">
+    <!-- Filters -->
+    <aside class="bg-white p-6 rounded-xl shadow-md h-max fade-in">
+      <h3 class="font-bold text-xl mb-4">Filters</h3>
+      <div class="mb-4">
+        <p class="font-semibold mb-2">Search Radius (km)</p>
+        <input type="range" min="1" max="500" value="100" class="w-full" id="radius_slider" />
+        <p class="text-sm text-gray-600">Radius: <span id="radius_value">100</span> km</p>
+      </div>
+      <div class="mb-4">
+        <p class="font-semibold mb-2">Budget (per night)</p>
+        <input type="range" min="1000" max="15000" value="15000" class="w-full" id="budget_slider" />
+        <p class="text-sm text-gray-600">Max: ₹<span id="budget_value">15000</span></p>
+      </div>
+      <div class="mb-4">
+        <p class="font-semibold mb-2">Star Rating</p>
+        <div class="flex flex-col gap-2 text-gray-700">
+          <label><input type="checkbox" class="star_filter" value="5" /> 5 Stars</label>
+          <label><input type="checkbox" class="star_filter" value="4" /> 4 Stars</label>
+          <label><input type="checkbox" class="star_filter" value="3" /> 3 Stars</label>
+        </div>
+      </div>
+      <div class="mb-4">
+        <p class="font-semibold mb-2">Popular Amenities</p>
+        <div class="flex flex-col gap-2 text-gray-700">
+          <label><input type="checkbox" /> Free WiFi</label>
+          <label><input type="checkbox" /> Breakfast included</label>
+          <label><input type="checkbox" /> Swimming Pool</label>
+          <label><input type="checkbox" /> Parking</label>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Hotel Grid -->
+    <div class="col-span-1 md:col-span-3 grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="hotelGrid"></div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="text-center py-6 bg-white shadow mt-10 text-gray-700 font-semibold">
+    © 2025 YOYO Hotels — Built by Darren, Ashutosh, Sharon, Adhi
+  </footer>
+  <script>
+    const grid = document.getElementById('hotelGrid');
+    let allHotels = []; // Store all fetched hotels
+
+    async function getCoordinates(place) {
+      const apiKey = "pk.4c90e75c59c37c6209cd34555e8c77c8"; //replace with your own free locationiq api key
+      const geoResponse = await fetch(
+        `https://us1.locationiq.com/v1/search.php?key=${apiKey}&q=${encodeURIComponent(place)}&format=json`
+      );
+      if (!geoResponse.ok) return null;
+      const data = await geoResponse.json();
+      return data.length > 0 ? { lat: data[0].lat, lon: data[0].lon } : null;
+    }
+
+    // Display hotels in the grid
+    function displayHotels(hotels) {
+      grid.innerHTML = "";
+      if (hotels.length === 0) {
+        grid.innerHTML = "<p class='col-span-full text-center text-gray-500'>No hotels match your filters.</p>";
+        return;
+      }
+
+      // Get current search parameters
+      const currentDate = document.querySelector("#date_input").value;
+      if (currentDate < new Date().toISOString().split("T")[0]) {
+        alert("Invalid date");
+        return;
+      }
+      const currentAdults = document.querySelector("#adults_input").value;
+
+      hotels.forEach(h => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden';
+
+        // Build detail page URL with query parameters
+        const detailUrl = `/hotel/${h.address_id}/?date=${encodeURIComponent(currentDate)}&adults=${currentAdults}`;
+
+        card.innerHTML = `
+          <div class="p-4">
+          <h2 class="font-bold text-lg">${h.name}</h2>
+          <p class="text-gray-600 text-sm">${h.slug} from centre</p>
+          <p class="text-gray-600 text-sm">Rating: ⭐ ${h.star_rating}</p>
+          <p class="font-bold text-xl mt-2"> Price: ₹${h.price_per_night}</p>
+          <p class="text-gray-600 text-sm">Description: ${h.description}</p>
+          <p class="font-bold text-xl mt-2">Phone No:${h.main_phone}</p>
+          
+          
+          <a href="${detailUrl}" class="block w-full mt-3 bg-blue-600 text-white p-2 rounded-md font-semibold text-center hover:bg-blue-700 transition">View Details</a>
+        </div>`;
+        grid.appendChild(card);
+      });
+    }
+
+    // Apply client-side filters to the loaded hotels
+    function applyFilters() {
+      const maxBudget = parseFloat(document.querySelector("#budget_slider").value);
+      const starCheckboxes = document.querySelectorAll(".star_filter:checked");
+      const radius = document.querySelector("#radius_slider").value;
+      const selectedStars = Array.from(starCheckboxes).map(cb => parseInt(cb.value));
+
+      let filteredHotels = allHotels;
+
+      // Filter by budget
+      filteredHotels = filteredHotels.filter(h => h.price_per_night <= maxBudget);
+
+      // Filter by star rating (only if some are selected)
+      if (selectedStars.length > 0) {
+        filteredHotels = filteredHotels.filter(h => selectedStars.includes(h.star_rating));
+      }
+
+      displayHotels(filteredHotels);
+    }
+
+    // Fetch hotels from the backend
+    async function fetchHotels(url) {
+      try {
+        const hotelResponse = await fetch(url);
+        if (!hotelResponse.ok) throw new Error("Failed to fetch hotels");
+
+        allHotels = await hotelResponse.json();
+
+        if (allHotels.length === 0) {
+          grid.innerHTML = "<p class='col-span-full text-center text-gray-500'>No hotels found near this location.</p>";
+          return;
+        }
+
+        // Apply filters and display
+        applyFilters();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
+    // Update budget display and apply filters
+    const budgetSlider = document.querySelector("#budget_slider");
+    const budgetValue = document.querySelector("#budget_value");
+    budgetSlider.addEventListener("input", () => {
+      budgetValue.textContent = budgetSlider.value;
+      if (allHotels.length > 0) {
+        applyFilters();
+      }
+    });
+
+    // Update radius display
+    const radiusSlider = document.querySelector("#radius_slider");
+    const radiusValue = document.querySelector("#radius_value");
+    radiusSlider.addEventListener("input", () => {
+      radiusValue.textContent = radiusSlider.value;
+    });
+
+    // Add event listeners to star rating checkboxes
+    document.querySelectorAll(".star_filter").forEach(checkbox => {
+      checkbox.addEventListener("change", () => {
+        if (allHotels.length > 0) {
+          applyFilters();
+        }
+      });
+    });
+
+    // Search button event listener
+    document.querySelector("#search_button").addEventListener("click", async () => {
+      const place = document.querySelector("#city_input").value;
+      const date = document.querySelector("#date_input").value;
+      const adults = document.querySelector("#adults_input").value;
+
+      if (!place) {
+        alert("Please enter a city or hotel name");
+        return;
+      }
+
+      if (!date) {
+        alert("Please select a date");
+        return;
+      }
+
+      const coords = await getCoordinates(place);
+
+      if (!coords) {
+        alert("Location not found");
+        return;
+      }
+
+      // Build URL without client-side filters (fetch all hotels that match location, date, adults)
+      const radius = document.querySelector("#radius_slider").value;
+      let url = `/api/hotels?lat=${coords.lat}&lon=${coords.lon}&radius=${radius}&date=${encodeURIComponent(date)}&adults=${adults}&max_budget=999999`;
+
+      await fetchHotels(url);
+    });
+  </script>
+
+</body>
+
+</html>
