@@ -1,11 +1,19 @@
 from django.shortcuts import render
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.db import connection
+from django.contrib.auth import authenticate
+from django.views.decorators.csrf import csrf_exempt
 from math import radians, cos, sin, asin, sqrt
 
 # Create your views here.
 def home (request) :
     return render(request,"yoyo_app/home.html")
+
+def login(request) :
+    return render(request,"yoyo_app/login.html") 
+
+def register(request) :
+    return render(request,"yoyo_app/register.html") 
 
 def hotels_near_location(request) :
     try:
@@ -24,16 +32,16 @@ def hotels_near_location(request) :
     except (TypeError, ValueError):
         return JsonResponse({"error": "Invalid or missing lat/lon"}, status=400)
     
-    with connection.cursor() as cursor :
+    with connection.cursor() as cursor:
         cursor.execute("select region_id,lat,lng from city")
         cities = cursor.fetchall()
     
     cities_res = []
-    for row in cities :
-        region_id,hlat,hlng = row
+    for row in cities:
+        region_id, hlat, hlng = row
         hlat = float(hlat)
         hlng = float(hlng)
-        dist = haversine(lat,lon,hlat,hlng)
+        dist = haversine(lat, lon, hlat, hlng)
         if dist <= radius_km:
             cities_res.append(region_id)
     
@@ -96,7 +104,6 @@ def hotels_near_location(request) :
 
     return JsonResponse(result, safe=False)
 
-
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371  # Radius of Earth in km
     dlat = radians(lat2 - lat1)
@@ -104,7 +111,6 @@ def haversine(lat1, lon1, lat2, lon2):
     a = sin(dlat/2)**2 + cos(radians(lat1)) * cos(radians(lat2)) * sin(dlon/2)**2
     c = 2 * asin(sqrt(a))
     return R * c
-
 
 def hotel_detail(request, address_id):
     """
@@ -190,4 +196,117 @@ def hotel_detail(request, address_id):
     
     return render(request, "yoyo_app/hotel_detail.html", context)
 
+# Register user
+@csrf_exempt
+def register_user(request):
+    """
+    Handle user registration via POST request with JSON data
+    """
+    if request.method == 'POST':
+        try:
+            import json
+            from django.contrib.auth.models import User
+            from django.contrib.auth.hashers import make_password
+            
+            # Parse JSON data from request body
+            data = json.loads(request.body)
+            username = data.get('username', '').strip()
+            first_name = data.get('first_name', '').strip()
+            last_name = data.get('last_name', '').strip()
+            email = data.get('email', '').strip()
+            password = data.get('password', '')
+            
+            # Validate input
+            if not username or not first_name or not last_name or not email or not password:
+                return JsonResponse({'error': 'All fields are required'}, status=400)
+            
+            if len(password) < 6:
+                return JsonResponse({'error': 'Password must be at least 6 characters'}, status=400)
+            
+            # Check if email already exists
+            if User.objects.filter(email=email).exists():
+                return JsonResponse({'error': 'Email already registered'}, status=400)
+            
+            # Check if username (email) already exists
+            if User.objects.filter(username=email).exists():
+                return JsonResponse({'error': 'Email already registered'}, status=400)
+            
+            # Hash the password using Django's password hasher
+            hashed_password = make_password(password)
+            
+            # Create new user with hashed password
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "INSERT INTO auth_user (password, username, first_name, last_name, email, is_active, is_staff, is_superuser, date_joined) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, NOW())",
+                    [hashed_password, username, first_name, last_name, email, 1, 0, 0]
+                )
+                # Get the ID of the newly created user
+                cursor.execute("SELECT LAST_INSERT_ID()")
+                user_id = cursor.fetchone()[0]
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Registration successful',
+                'user_id': user_id
+            }, status=201)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Only POST method allowed'}, status=405)
 
+# Login user
+@csrf_exempt
+def login_user(request):
+    """
+    Handle user login via POST request with JSON data
+    """
+    if request.method == 'POST':
+        try:
+            import json
+            
+            # Parse JSON data from request body
+            data = json.loads(request.body)
+            email = data.get('email', '').strip()
+            password = data.get('password', '')
+            
+            # Validate input
+            if not email or not password:
+                return JsonResponse({'error': 'All fields are required'}, status=400)
+            
+            # Authenticate user
+            user = authenticate(username=email, password=password)
+            
+            if user is not None:
+                # Set user in session
+                request.session['user_id'] = user.id
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Login successful',
+                    'user_id': user.id
+                }, status=200)
+            else:
+                return JsonResponse({'error': 'Invalid credentials'}, status=401)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Only POST method allowed'}, status=405)
+
+def logout_user(request):
+    """
+    Handle user logout
+    """
+    if request.method == 'POST':
+        try:
+            # Clear user session
+            request.session.flush()
+            return JsonResponse({'success': True, 'message': 'Logout successful'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Only POST method allowed'}, status=405)
