@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YOYO Hotels — Home</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      background: #1a0b2e;
+      background-image:
+        url("https://raw.githubusercontent.com/tailwindlabs/heroicons/master/src/outline/bed.svg"),
+        url("https://raw.githubusercontent.com/tailwindlabs/heroicons/master/src/outline/key.svg"),
+        url("https://raw.githubusercontent.com/tailwindlabs/heroicons/master/src/outline/map-pin.svg"),
+        url("https://raw.githubusercontent.com/tailwindlabs/heroicons/master/src/outline/building-office.svg");
+      background-repeat: repeat;
+      filter:
+        drop-shadow(0 0 14px #c084fc)
+        drop-shadow(0 0 26px #a855f7)
+        drop-shadow(0 0 40px #9333ea)
+        drop-shadow(0 0 55px #7e22ce);
+      background-size: 160px;: repeat;
+      background-size: 160px;
+      animation: doodleFloat 25s linear infinite;
+      background-attachment: fixed;
+      color: white;
+      font-family: 'Inter', sans-serif;
+    }
+    .nav-glass {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(25px);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.05);
+    }
+    .nav-link {transition: 0.25s;}
+    .nav-link:hover {color: #d8b4fe;}
+
+    .btn-yoyo {
+      background: linear-gradient(135deg, #c084fc, #9333ea, #ec4899);
+      color: white;
+      font-weight: 600;
+      border-radius: 10px;
+      transition: 0.25s;
+    }
+    .btn-yoyo:hover {opacity: 0.9; transform: scale(1.03);}    
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 18px;
+      padding: 20px;
+      backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+      transition: 0.3s;
+    }
+    .glass-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 40px rgba(255, 255, 255, 0.12);
+    }
+
+    .hero-overlay {
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(10px);
+    }
+
+    .fade-in {animation: fade 1s ease forwards; opacity: 0;}
+    @keyframes fade {to {opacity: 1;}}
+
+    .glass-input {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(18px);
+      color: white;
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.08);
+    }
+    .glass-input::placeholder {color: rgba(255, 255, 255, 0.6);}
+  @keyframes doodleFloat {
+      0% { background-position: 0 0, 200px 200px, 400px 400px, 600px 600px; }
+      50% { background-position: 200px 200px, 400px 400px, 600px 600px, 800px 800px; }
+      100% { background-position: 0 0, 200px 200px, 400px 400px, 600px 600px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="nav-glass flex items-center justify-between p-6 sticky top-0 z-50">
+    <a href="#" class="text-2xl font-bold text-purple-300 nav-link">YOYO Hotels</a>
+    <div class="flex gap-6">
+      <a href="#" class="nav-link">← Back to Search</a>
+      <a class="nav-link">Bookings</a>
+      <a href="#login" class="btn-yoyo px-4 py-2">Login</a>
+    </div>
+  </nav>
+
+  <section class="h-[70vh] flex items-center justify-center fade-in nav-glass">
+
+    <div class="glass-card p-10 rounded-2xl text-center text-white max-w-2xl">
+      <h2 class="text-4xl font-bold mb-4 fade-in">Find & Book Your Ideal Stay</h2>
+      <p class="mb-6 fade-in">Compare real-time prices, availability, and ratings.</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 glass-card fade-in">
+        <input placeholder="City / Hotel" class="glass-input p-3 rounded-md" />
+        <input type="date" class="glass-input p-3 rounded-md" />
+        <select class="glass-input p-3 rounded-md">
+          <option>1 Adult</option>
+          <option selected>2 Adults</option>
+          <option>3 Adults</option>
+        </select>
+        <button class="btn-yoyo p-3">Search</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-6">
+
+    <aside class="glass-card h-max fade-in">
+      <h3 class="font-bold text-xl mb-4">Filters</h3>
+      <div class="mb-4">
+        <p class="font-semibold mb-2">Search Radius (km)</p>
+        <input type="range" min="1" max="500" value="100" class="w-full" />
+        <p class="text-sm text-purple-200">Radius: 100 km</p>
+      </div>
+      <div class="mb-4">
+        <p class="font-semibold mb-2">Budget</p>
+        <input type="range" min="1000" max="15000" value="15000" class="w-full" />
+        <p class="text-sm text-purple-200">Max: ₹15000</p>
+      </div>
+      <div class="mb-4">
+        <p class="font-semibold mb-2">Star Rating</p>
+        <div class="flex flex-col gap-2 text-purple-200">
+          <label><input type="checkbox" /> 5 Stars</label>
+          <label><input type="checkbox" /> 4 Stars</label>
+          <label><input type="checkbox" /> 3 Stars</label>
+        </div>
+      </div>
+    </aside>
+
+    <div class="col-span-1 md:col-span-3 grid md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">
+      <!-- Example hotel card -->
+      <div class="glass-card">
+        <h2 class="font-bold text-lg">Sample Hotel</h2>
+        <p class="text-purple-200">1.2 km from centre</p>
+        <p class="mt-2 text-xl font-bold">₹4200</p>
+        <p class="text-purple-200">Rating: ⭐ 4.6</p>
+        <button class="btn-yoyo w-full mt-3 p-2">View Details</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="nav-glass text-center py-6 text-purple-200 font-semibold opacity-90">
+    © 2025 YOYO Hotels — Built by Darren, Ashutosh, Sharon, Adhi
+  </footer>
+
+</body>
+</html>
