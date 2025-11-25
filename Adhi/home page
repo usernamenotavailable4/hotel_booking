@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YOYO Hotels — Home</title>
+
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- THEME OVERRIDE CSS -->
+  <style>
+    :root {
+      --bg: #1a0f24;
+      --accent: #7f5bff;
+      --accent2: #b794ff;
+      --glass: rgba(255, 255, 255, 0.08);
+      --white-soft: rgba(255, 255, 255, 0.85);
+      --muted: rgba(255, 255, 255, 0.6);
+      --radius: 16px;
+      font-family: Inter, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: white;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Cstyle%3E.cls-1{fill:none;stroke:%238e73ff;stroke-opacity:0.28;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;} .cls-2{fill:%237f5bff;fill-opacity:0.1;}%3C/style%3E%3Crect width='600' height='600' class='cls-2'/%3E%3Cpath class='cls-1' d='M40 100 L40 60 L80 40 L120 60 L120 100 Z M50 100 L50 140 L110 140 L110 100'/%3E%3C/svg%3E");
+      background-size: 460px 460px;
+      background-repeat: repeat;
+      background-attachment: fixed;
+      animation: floatBg 16s linear infinite;
+    }
+
+    @keyframes floatBg {
+      0% { background-position: 0 0; }
+      50% { background-position: 200px 200px; }
+      100% { background-position: 0 0; }
+    }
+
+    /* NAVBAR */
+    nav {
+      background: rgba(255, 255, 255, 0.04) !important;
+      backdrop-filter: blur(18px) !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, .45);
+    }
+
+    nav a {
+      color: var(--white-soft) !important;
+      transition: 0.25s;
+    }
+
+    nav a:hover {
+      color: var(--accent2) !important;
+    }
+
+    /* HERO GLASS BOX */
+    .hero-glass {
+      background: rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 20px;
+      box-shadow: 0 0 60px rgba(127, 91, 255, 0.25);
+    }
+
+    /* GLASS INPUTS */
+    .glass-input {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: white;
+      backdrop-filter: blur(14px);
+    }
+
+    .glass-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* PURPLE GRADIENT BUTTON */
+    .btn-yoyo {
+      background: linear-gradient(135deg, #9d6bff, #7f5bff, #e056ff);
+      color: white;
+      font-weight: 700;
+      border-radius: 12px;
+      transition: 0.25s;
+      box-shadow: 0 0 25px rgba(127, 91, 255, 0.5);
+    }
+
+    .btn-yoyo:hover {
+      transform: translateY(-3px);
+      filter: brightness(1.15);
+    }
+
+    /* GLASS FILTER SIDEBAR */
+    .filter-glass {
+      background: var(--glass);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      backdrop-filter: blur(18px);
+      box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+    }
+
+    /* HOTEL CARDS */
+    .hotel-card {
+      background: var(--glass);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(14px);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 0 25px rgba(127, 91, 255, 0.3);
+      transition: 0.3s;
+    }
+
+    .hotel-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 50px rgba(127, 91, 255, 0.5);
+    }
+
+    footer {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(14px);
+      color: var(--muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="flex items-center justify-between p-6">
+    <a href="/" class="text-2xl font-bold">YOYO Hotels</a>
+    <div class="flex gap-4">
+      <a href="/">← Back to Search</a>
+      <a>Bookings</a>
+      <a href="login.html" class="btn-yoyo px-4 py-2">Login</a>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero-section h-[70vh] bg-cover bg-center flex items-center justify-center"
+    style="background-image:url('https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=1500');">
+
+    <div class="hero-glass p-10 text-center text-white max-w-2xl">
+      <h2 class="text-4xl font-bold mb-4">Find & Book Your Ideal Stay</h2>
+      <p class="mb-6">Compare real-time prices, availability, and ratings.</p>
+
+      <!-- SEARCH BAR -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 glass-card">
+        <input placeholder="City / Hotel" class="glass-input p-3 rounded-md" id="city_input" />
+        <input type="date" class="glass-input p-3 rounded-md" id="date_input" />
+        <select class="glass-input p-3 rounded-md" id="adults_input">
+          <option value="1">1 Adult</option>
+          <option value="2" selected>2 Adults</option>
+          <option value="3">3 Adults</option>
+        </select>
+        <button class="btn-yoyo p-3" id="search_button">Search</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 p-6">
+
+    <!-- FILTER SIDEBAR -->
+    <aside class="filter-glass p-6 h-max">
+      <h3 class="font-bold text-xl mb-4">Filters</h3>
+
+      <div class="mb-4">
+        <p class="font-semibold mb-2">Search Radius (km)</p>
+        <input type="range" min="1" max="500" value="100" class="w-full" id="radius_slider" />
+        <p class="text-sm text-purple-200">Radius: <span id="radius_value">100</span> km</p>
+      </div>
+
+      <div class="mb-4">
+        <p class="font-semibold mb-2">Budget (per night)</p>
+        <input type="range" min="1000" max="15000" value="15000" class="w-full" id="budget_slider" />
+        <p class="text-sm text-purple-200">Max: ₹<span id="
