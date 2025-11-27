@@ -7,43 +7,42 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    /* ---- PREMIUM PURPLE THEME ---- */
+    /* PREMIUM PURPLE GRADIENT */
     body {
-      background: linear-gradient(135deg, #120018, #24003a, #3d0066, #250031);
-      background-attachment: fixed;
+      background: radial-gradient(circle at top, #3b0066, #1b002e, #0d0018);
     }
 
-    /* ---- PREMIUM DOODLES ---- */
+    /* Floating doodles */
     .doodle-shape {
       position: absolute;
-      bottom: -80px;
+      bottom: -60px;
       animation: floatUp linear infinite;
-      opacity: 0.12;
       font-weight: 700;
+      opacity: 0.35;
+      color: rgba(255, 255, 255, 0.5);
       pointer-events: none;
       user-select: none;
-      color: rgba(255, 220, 255, 0.35);
-      filter: drop-shadow(0 0 6px rgba(255,255,255,0.25));
     }
 
     @keyframes floatUp {
-      0% { transform: translateY(0) rotate(0deg); }
-      100% { transform: translateY(-120vh) rotate(360deg); opacity: 0; }
+      0% { transform: translateY(0); opacity: 0.4; }
+      100% { transform: translateY(-150vh); opacity: 0; }
     }
 
     /* Tabs */
     .pay-tab {
       padding: 10px 18px;
-      border-radius: 16px;
+      border-radius: 14px;
       background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.13);
       color: #eee;
       transition: 0.3s;
     }
+
     .active-tab {
-      background: linear-gradient(to right, #d52bff, #7f1dff);
+      background: linear-gradient(to right, #f032c9, #7d1cff, #b44cff);
       border-color: rgba(255,255,255,0.4);
-      box-shadow: 0 0 12px #b259ff88;
+      box-shadow: 0 0 18px #8c2cff88;
     }
 
     .input-card {
@@ -56,27 +55,33 @@
     }
 
     .soft-btn {
-      background: linear-gradient(to right, #d52bff, #7f1dff);
-      box-shadow: 0 0 12px #b259ff66;
+      background: linear-gradient(to right, #f032c9, #7d1cff);
+      box-shadow: 0 0 15px #8c2cff99;
+    }
+
+    /* DOODLES CONTAINER FIX */
+    .animated-doodles {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
     }
   </style>
 </head>
 
 <body class="text-white font-sans min-h-screen overflow-x-hidden">
 
-  <!-- PREMIUM DOODLE BACKGROUND -->
-  <div class="animated-doodles pointer-events-none fixed inset-0 overflow-hidden z-0"></div>
+  <!-- FIXED DOODLE BACKGROUND -->
+  <div class="animated-doodles"></div>
 
   <!-- CONTENT -->
   <div class="relative z-10">
-
     <!-- HEADER -->
-    <header class="w-full backdrop-blur-2xl bg-white/10 border-b border-purple-300/20 shadow-xl p-5 flex justify-between items-center">
+    <header class="w-full backdrop-blur-xl bg-white/10 border-b border-purple-300/20 shadow-lg p-5 flex justify-between items-center">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-fuchsia-500 to-purple-600 flex items-center justify-center font-bold text-xl shadow-lg">Y</div>
-        <h1 class="text-3xl font-extrabold bg-gradient-to-r from-pink-300 to-purple-200 bg-clip-text text-transparent">
-          YOYO Pay
-        </h1>
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center font-bold text-xl shadow-md">Y</div>
+        <h1 class="text-3xl font-extrabold bg-gradient-to-r from-pink-300 to-purple-200 bg-clip-text text-transparent">YOYO Pay</h1>
       </div>
       <div class="flex items-center gap-2 text-xs font-semibold text-gray-200">
         <span class="hidden md:block">🔒 128-bit SSL Encrypted</span>
@@ -87,7 +92,7 @@
     <!-- PROGRESS -->
     <div class="max-w-4xl mx-auto mt-6 mb-4 px-6">
       <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
-        <div class="h-full bg-gradient-to-r from-fuchsia-400 to-purple-500 w-2/3"></div>
+        <div class="h-full bg-gradient-to-r from-fuchsia-500 to-purple-600 w-2/3"></div>
       </div>
       <p class="text-center text-xs mt-2 text-gray-200 tracking-wide">Step 2 of 3 — Payment</p>
     </div>
@@ -96,7 +101,7 @@
     <div class="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
 
       <!-- SUMMARY -->
-      <aside class="bg-white/10 backdrop-blur-2xl rounded-3xl border border-purple-300/20 shadow-2xl p-6 h-max">
+      <aside class="bg-white/10 backdrop-blur-xl rounded-3xl border border-purple-300/20 shadow-xl p-6 h-max">
         <h2 class="text-xl font-bold text-pink-200 mb-4">Booking Summary</h2>
 
         <div class="space-y-3 text-sm text-gray-200">
@@ -116,16 +121,10 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-2 gap-3 text-xs">
-            <div><p class="text-gray-300">Guests</p><p class="font-semibold text-white">2 Adults</p></div>
-            <div><p class="text-gray-300">Nights</p><p class="font-semibold text-white">2</p></div>
-          </div>
-
           <hr class="border-purple-200/20 my-2" />
-
           <div class="flex justify-between text-sm"><span>Room Price</span><span class="font-semibold">₹6400</span></div>
           <div class="flex justify-between text-sm"><span>Taxes & Fees</span><span class="font-semibold">₹768</span></div>
-          <div class="flex justify-between text-sm"><span>Discount</span><span class="font-semibold text-green-300">- ₹0</span></div>
+          <div class="flex justify-between text-sm"><span>Discount</span><span class="font-semibold text-green-300 bg-green-500/15 px-2 py-[2px] rounded-lg">- ₹0</span></div>
 
           <div class="mt-4 p-4 rounded-2xl bg-black/40 border border-purple-200/30 flex justify-between items-center">
             <span>Total Payable</span>
@@ -135,8 +134,7 @@
       </aside>
 
       <!-- PAYMENT -->
-      <section class="lg:col-span-2 bg-white/10 backdrop-blur-2xl rounded-3xl border border-purple-300/20 shadow-2xl p-8">
-
+      <section class="lg:col-span-2 bg-white/10 backdrop-blur-xl rounded-3xl border border-purple-300/20 shadow-xl p-8">
         <div class="flex gap-3 text-sm mb-6">
           <button data-tab="upi" class="pay-tab active-tab">UPI / QR</button>
           <button data-tab="card" class="pay-tab">Card</button>
@@ -151,13 +149,8 @@
               <p class="text-gray-300 text-sm mb-3">Scan the QR using any UPI app</p>
 
               <div class="p-2 bg-white rounded-2xl shadow-inner w-48 h-48 flex items-center justify-center mb-4">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pn=YOYOHotels&pa=yoyo@upi&am=7168"
-                     class="object-contain rounded-xl w-full h-full" />
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pn=YOYOHotels&pa=yoyo@upi&am=7168" class="object-contain rounded-xl w-full h-full" />
               </div>
-
-              <p class="text-xs text-gray-300">UPI ID:</p>
-              <p class="font-mono font-bold text-white text-sm">yoyo@upi</p>
-              <p class="text-[11px] text-gray-400 mt-1">Don’t refresh while paying</p>
             </div>
 
             <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
@@ -198,23 +191,26 @@
             <button onclick="startPayment('netbanking')" class="w-full soft-btn py-3 rounded-xl font-semibold">Pay via NetBanking</button>
           </div>
         </div>
-
       </section>
     </div>
   </div>
 
-  <!-- DOODLE SCRIPT -->
+  <!-- DOODLE SCRIPT FIXED -->
   <script>
     const doodleContainer = document.querySelector('.animated-doodles');
-    const shapes = ["✦","◆","⬡","✧","✪"];
 
-    for (let i = 0; i < 30; i++) {
+    // ALL DOODLES EXCEPT THE SECOND ONE (REMOVED ⬢)
+    const shapes = ["◆","✦","✧","✪","●","◽"];
+
+    for (let i = 0; i < 35; i++) {
       const doodle = document.createElement("div");
       doodle.innerText = shapes[Math.floor(Math.random() * shapes.length)];
       doodle.classList.add("doodle-shape");
+
       doodle.style.left = Math.random() * 100 + "vw";
-      doodle.style.animationDuration = 14 + Math.random() * 20 + "s";
-      doodle.style.fontSize = 22 + Math.random() * 32 + "px";
+      doodle.style.animationDuration = 10 + Math.random() * 18 + "s";
+      doodle.style.fontSize = 22 + Math.random() * 45 + "px";
+
       doodleContainer.appendChild(doodle);
     }
 
@@ -223,7 +219,6 @@
       btn.addEventListener("click", () => {
         document.querySelectorAll(".pay-tab").forEach(b => b.classList.remove("active-tab"));
         btn.classList.add("active-tab");
-
         document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
         document.querySelector(`#tab-${btn.dataset.tab}`).classList.remove("hidden");
       });
