@@ -1,0 +1,26 @@
+{% load socialaccount %}
+<!doctype html>
+<html>
+
+<head>
+    <title>Sign Up - YOYO Hotels</title>
+</head>
+
+<body>
+    <h2>Create Account</h2>
+    {% if form.errors %}
+    <p style="color: red;">{{ form.errors }}</p>
+    {% endif %}
+    <form method="POST" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Sign Up</button>
+    </form>
+    <div>
+        <p>Or sign up with:</p>
+        <a href="{% provider_login_url 'google' %}">Google</a>
+    </div>
+    <p>Already registered? <a href="{% url 'account_login' %}">Sign in</a></p>
+</body>
+
+</html>

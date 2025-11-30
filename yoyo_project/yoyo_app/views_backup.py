@@ -25,7 +25,7 @@ def hotels_near_location(request) :
         adults = request.GET.get('adults', '2')
         
         # Get filter parameters
-        min_budget = request.GET.get('min_budget', '100')
+        min_budget = request.GET.get('min_budget', '1000')
         max_budget = request.GET.get('max_budget', '15000')
         star_ratings = request.GET.getlist('star_ratings[]')  # List of selected star ratings
         
@@ -47,13 +47,12 @@ def hotels_near_location(request) :
     
     if not cities_res:
         # No nearby cities found; return empty list early
-        print("No nearby cities found")
         return JsonResponse([], safe=False)
     
     # Get hotels that can accommodate the number of adults AND their prices within budget
     with connection.cursor() as cursor:
         cursor.execute(
-            "SELECT hotel_id, price_per_night FROM room_type WHERE max_adults >= %s AND price_per_night BETWEEN %s AND %s", 
+            "SELECT DISTINCT hotel_id, price_per_night FROM room_type WHERE max_adults >= %s AND price_per_night BETWEEN %s AND %s", 
             [adults, min_budget, max_budget]
         )
         hotel_price_rows = cursor.fetchall()
@@ -64,14 +63,10 @@ def hotels_near_location(request) :
     
     if not hotel_ids:
         # No hotels can accommodate this number of adults within budget
-        print("No hotels can accommodate this number of adults within budget")
         return JsonResponse([], safe=False)
     
     # Concatenate both lists before the query
     combined_params = cities_res + hotel_ids
-
-    print(f"cities_res: {cities_res}")
-    print(f"hotel_ids: {hotel_ids}")
     
     # Create placeholders for both conditions
     placeholders_cities = ','.join(['%s'] * len(cities_res))
@@ -84,26 +79,24 @@ def hotels_near_location(request) :
         star_filter = f" AND star_rating IN ({star_placeholders})"
         combined_params = combined_params + star_ratings
     
-    print(combined_params)
     # Query hotels that match location, capacity, budget, and star rating
     with connection.cursor() as cursor:
         cursor.execute(
-            f"SELECT id, name, slug, main_phone, description, star_rating FROM hotel WHERE address_id IN ({placeholders_cities}) AND id IN ({placeholders_hotels}){star_filter}",
+            f"SELECT address_id, name, slug, main_phone, description, star_rating FROM hotel WHERE address_id IN ({placeholders_cities}) AND address_id IN ({placeholders_hotels}){star_filter}",
             combined_params
         )
         hotels = cursor.fetchall()
-    print(hotels)
 
     result = []
     for row in hotels:
-        hotel_id, name, slug, main_phone, description, star_rating = row
+        address_id, name, slug, main_phone, description, star_rating = row
         result.append({
-            "hotel_id": hotel_id,
+            "address_id": address_id,
             "name": name,
             "slug": slug,
             "main_phone": main_phone,
             "description": description,
-            "price_per_night": price_map.get(hotel_id, 0),  # Get price from the mapping
+            "price_per_night": price_map.get(address_id, 0),  # Get price from the mapping
             "date": date,
             "adults": adults,
             "star_rating": star_rating,
@@ -195,7 +188,6 @@ def hotel_detail(request, address_id):
             room["available"] = room["can_accommodate"]
         
         rooms.append(room)
-        print(f'rooms: {rooms}')
     
     context = {
         "hotel": hotel,
@@ -334,7 +326,6 @@ def bookings_history(request):
     
     return render(request, 'yoyo_app/bookings_history.html', context)
 
-# Bookings API
 @csrf_exempt
 def get_bookings_api(request):
     """
@@ -348,7 +339,21 @@ def get_bookings_api(request):
     try:
         # Fetch bookings from database
         with connection.cursor() as cursor:
-            cursor.execute("select b.id,b.user_id,b.checkin_date,b.checkout_date,b.total_amount,b.status,h.name,c.name from bookings as b inner join hotel as h on h.id = b.hotel_id inner join address as a on a.id = h.address_id inner join city as c on c.id = a.city_id where user_id = %s order by b.checkout_date desc", [user_id])
+            cursor.execute("""
+                SELECT 
+                    b.id,
+                    h.name as hotel_name,
+                    c.name as location,
+                    b.checkin_date,
+                    b.checkout_date,
+                    b.total_amount,
+                    b.status
+                FROM bookings as b
+                INNER JOIN hotel as h ON b.hotel_id = h.address_id
+                LEFT JOIN city as c ON h.address_id = c.region_id
+                WHERE b.user_id = %s
+                ORDER BY b.checkin_date DESC
+            """, [user_id])
             
             bookings = cursor.fetchall()
         
@@ -357,28 +362,15 @@ def get_bookings_api(request):
         for booking in bookings:
             result.append({
                 'id': booking[0],
-                'name' : booking[6],
-                'location': booking[7],
-                'checkin': str(booking[2]),
-                'checkout': str(booking[3]),
-                'price': f'₹{booking[4]}',
-                'status': booking[5]
+                'hotel': booking[1],
+                'location': booking[2] if booking[2] else 'N/A',
+                'checkin': str(booking[3]),
+                'checkout': str(booking[4]),
+                'price': f'₹{booking[5]}',
+                'status': booking[6]
             })
-        
-        print(result)
         
         return JsonResponse(result, safe=False)
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-
-def payment(request, room_type_id):
-    """
-    Display bookings page
-    """
-    context = {
-        'room_type_id': room_type_id,
-        'user_id': request.session.get('user_id')
-    }
-    
-    return render(request, 'yoyo_app/payment.html', context)

@@ -167,8 +167,9 @@
             font-size: 14px
         }
 
-        button.btn {
-            padding: 12px 14px;
+        button.btn,
+        a.s-btn {
+            padding: 10px 14px;
             border-radius: 12px;
             border: 0;
             background: linear-gradient(90deg, var(--accent), #ffb37b);
@@ -178,9 +179,16 @@
             cursor: pointer;
             box-shadow: 0 8px 28px rgba(255, 107, 107, 0.14);
             transition: transform .12s ease, box-shadow .12s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            justify-content: center;
+            user-select: none;
         }
 
-        button.btn:active {
+        button.btn:active,
+        a.s-btn:active {
             transform: translateY(1px)
         }
 
@@ -201,18 +209,6 @@
 
         .social {
             display: flex;
-            gap: 10px
-        }
-
-        .s-btn {
-            padding: 10px 12px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            background: transparent;
-            color: var(--muted);
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
             gap: 10px
         }
 
@@ -270,7 +266,8 @@
 
         /* accessible focus states */
         input:focus,
-        button:focus {
+        button:focus,
+        a:focus {
             outline: 3px solid rgba(255, 107, 107, 0.12);
             outline-offset: 3px
         }
@@ -324,12 +321,13 @@
                 <div class="alt" style="margin-top:8px">
                     <div style="font-size:13px;color:var(--muted)">or continue with</div>
                     <div class="social">
-                        <button type="button" class="s-btn" onclick="social('google')">Google</button>
-                        <button type="button" class="s-btn" onclick="social('apple')">Apple</button>
+                        <a class="s-btn" href="/accounts/google/login/">Google</a>
+                        <a class="s-btn" href="#" onclick="alert('Apple login integration coming soon')">Apple</a>
                     </div>
                 </div>
 
-                <div class="footer">Don't have an account? <a class="link" href="{% url 'register' %}">Create one →</a>
+                <div class="footer">Don't have an account? <a class="link" href="{% url 'register' %}">Create one →
+                    </a>
                 </div>
             </form>
         </aside>
@@ -348,11 +346,7 @@
             window.addEventListener('mousemove', move);
         })();
 
-        function social(provider) {
-            // placeholder behaviour — integrate your auth here
-            alert('Continue with ' + provider + ' — integrate your OAuth flow here.');
-        }
-
+        // Username/password login form submission handler
         function handleSubmit(e) {
             e.preventDefault();
             const f = e.target;
@@ -362,13 +356,11 @@
                 remember: f.remember.checked
             };
 
-            // Basic client-side validation
             if (!data.email || !data.password) {
                 alert('Please fill all fields');
                 return false;
             }
 
-            // Call the login API
             fetch('/api/login/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -376,7 +368,6 @@
             })
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
                     if (result.success) {
                         alert('Login successful!');
                         window.location.href = '/home/';

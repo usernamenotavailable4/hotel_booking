@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path,include
 from . import views
 
 urlpatterns = [
@@ -10,4 +10,8 @@ urlpatterns = [
     path('api/login/', views.login_user, name='login_user'),
     path('logout/', views.logout_user, name='logout_user'),
     path('hotel/<int:address_id>/', views.hotel_detail, name='hotel_detail'),
+    path('accounts/', include('allauth.urls')),
+    path('bookings_history/',views.bookings_history,name='bookings_history'),
+    path('api/bookings/',views.get_bookings_api,name='get_bookings_api'),
+    path('payment/<int:room_type_id>/',views.payment,name='payment'),
 ]

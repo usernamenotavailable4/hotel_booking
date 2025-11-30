@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Complete Registration</title>
+</head>
+
+<body>
+    <h2>Complete Your Registration</h2>
+    <form method="POST" action="">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Finish Signup</button>
+    </form>
+</body>
+
+</html>
