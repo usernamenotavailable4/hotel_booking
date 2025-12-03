@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Payment Successful — YOYO Hotels</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at center, #3A0E6A 0%, #240043 55%, #0F001C 100%);
+            font-family: "Inter", sans-serif;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Matte glass */
+        .glass {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 20px;
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Payment cards */
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.10);
+            border-radius: 14px;
+            padding: 22px;
+        }
+
+        /* Floating animated doodles */
+        .doodle {
+            position: absolute;
+            width: 180px;
+            opacity: 0.45;
+            z-index: 1;
+            animation: float 7s infinite ease-in-out alternate;
+            filter: drop-shadow(0px 0px 6px rgba(255, 255, 255, 0.4));
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            100% {
+                transform: translateY(-60px);
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen px-6 py-10">
+
+    <!-- DOODLES THAT ARE VISIBLE & MOVING -->
+    <lottie-player src="https://lottie.host/0ddf8232-7935-4ac0-9e65-eb98f6717b6b/bxBavH6v1Z.json" class="doodle"
+        style="top: 10%; left: 8%; animation-delay: 0s;" speed="1" loop autoplay></lottie-player>
+
+    <lottie-player src="https://lottie.host/e3c6fd99-eeb1-4a0e-b7ce-9f91553e95b4/tlxmO0qCqQ.json" class="doodle"
+        style="top: 65%; left: 12%; animation-delay: 1s;" speed="1" loop autoplay></lottie-player>
+
+    <lottie-player src="https://lottie.host/6ebc4c3c-176a-413e-a64b-c13c6f0ca6c3/25O2dQXn3d.json" class="doodle"
+        style="top: 30%; right: 12%; animation-delay: 2s;" speed="1" loop autoplay></lottie-player>
+
+    <lottie-player src="https://lottie.host/28cd9eb1-cf78-4afc-8858-b55e3b61e212/NaHOhYQkV2.json" class="doodle"
+        style="bottom: 10%; right: 32%; animation-delay: 0.5s;" speed="1" loop autoplay></lottie-player>
+
+    <!-- Payment Section -->
+    <div class="glass max-w-3xl mx-auto p-10 text-center mb-10 relative z-20">
+        <h1 class="text-4xl font-extrabold mb-2">Payment Successful 🎉</h1>
+        <p class="text-gray-300 text-lg">Your booking has been confirmed successfully.</p>
+
+        <div class="text-left mt-6 text-gray-200 leading-relaxed">
+            <p><strong>Hotel:</strong> {{ hotel_name }}</p>
+            <p><strong>Room Type:</strong> {{ room_type }}</p>
+            <p><strong>Check-In:</strong> {{ checkin }}</p>
+            <p><strong>Check-Out:</strong> {{ checkout }}</p>
+            <p><strong>Guests:</strong> {{ adults }} Adults</p>
+            <p><strong>Booking ID:</strong> {{ booking_id }}</p>
+            <p><strong>Payment ID:</strong> {{ payment_id }}</p>
+            <p class="text-green-400 text-xl font-bold mt-2">₹{{ total_amount }} Paid Successfully</p>
+        </div>
+
+        <div class="flex justify-center gap-4 mt-6">
+            <a href="/download-invoice/{{ booking_id }}"
+                class="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl font-semibold">
+                Download Invoice
+            </a>
+            <a href="/bookings_history/"
+                class="px-6 py-3 bg-white text-purple-900 hover:bg-gray-200 rounded-xl font-semibold">
+                View My Bookings
+            </a>
+        </div>
+    </div>
+
+    <!-- Saved Payment Methods -->
+    <div class="text-center mb-6 relative z-20">
+        <h2 class="text-3xl font-bold">Your online payments — faster and easier</h2>
+        <p class="text-gray-300 mt-2">Save your payment options for seamless future bookings</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto relative z-20">
+        <div class="card">
+            <h3 class="font-semibold text-lg mb-2">Credit/Debit Cards <span class="text-pink-400 cursor-pointer">+
+                    Add</span></h3>
+            <p class="text-gray-300 text-sm">You don't have any saved cards</p>
+        </div>
+        <div class="card">
+            <h3 class="font-semibold text-lg mb-2">Net Banking <span class="text-pink-400 cursor-pointer">+ Add</span>
+            </h3>
+            <p class="text-gray-300 text-sm">No saved net banking accounts</p>
+        </div>
+        <div class="card">
+            <h3 class="font-semibold text-lg mb-2">UPI <span class="text-pink-400 cursor-pointer">+ Add</span></h3>
+            <p class="text-gray-300 text-sm">No UPI IDs added</p>
+        </div>
+        <div class="card">
+            <h3 class="font-semibold text-lg mb-2">Gift Vouchers <span class="text-pink-400 cursor-pointer">+ Add</span>
+            </h3>
+            <p class="text-gray-300 text-sm">No vouchers linked</p>
+        </div>
+        <div class="card">
+            <h3 class="font-semibold text-lg mb-2">Wallets <span class="text-pink-400 cursor-pointer">+ Add</span></h3>
+            <p class="text-gray-300 text-sm">No wallets linked</p>
+        </div>
+        <div class="card">
+            <h3 class="font-semibold text-lg mb-2">Reward Points <span class="text-pink-400 cursor-pointer">+ Add</span>
+            </h3>
+            <p class="text-gray-300 text-sm">No reward accounts added</p>
+        </div>
+    </div>
+
+</body>
+
+</html>

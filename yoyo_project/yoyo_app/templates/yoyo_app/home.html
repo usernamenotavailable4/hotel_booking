@@ -160,7 +160,8 @@
         <a href="/" class="block px-3 py-2 rounded-lg hover:bg-white/10 text-sm text-white">← Back to Search</a>
         <a href="{% url 'bookings_history' %}"
           class="block px-3 py-2 rounded-lg hover:bg-white/10 text-sm text-white">Bookings</a>
-        <a href="/profile" class="block px-3 py-2 rounded-lg hover:bg-white/10 text-sm text-white">Profile</a>
+        <a href="{% url 'profile' %}"
+          class="block px-3 py-2 rounded-lg hover:bg-white/10 text-sm text-white">Profile</a>
         <a href="{% url 'login' %}" class="block px-3 py-2 rounded-lg hover:bg-white/10 text-sm text-white">Logout</a>
       </div>
     </div>

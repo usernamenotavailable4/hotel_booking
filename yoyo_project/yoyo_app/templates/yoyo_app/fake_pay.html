@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Processing Payment...</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        .loader {
+            border: 6px solid #333;
+            border-top: 6px solid #ff3bd4;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            margin: auto;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Processing your payment...</h2>
+    <div class="loader"></div>
+
+    <script>
+        // Wait 2–4 seconds then redirect to success
+        setTimeout(() => {
+            const success = Math.random() > 0.2; // 80% success
+            window.location.href = success ? "/payment-success" : "/payment-failed";
+        }, 3000);
+    </script>
+
+</body>
+
+</html>

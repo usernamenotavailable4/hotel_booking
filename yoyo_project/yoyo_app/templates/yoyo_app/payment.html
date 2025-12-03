@@ -7,13 +7,14 @@
     <title>YOYO Pay — Secure Checkout</title>
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+
     <style>
-        /* PREMIUM PURPLE GRADIENT */
         body {
             background: radial-gradient(circle at top, #3b0066, #1b002e, #0d0018);
         }
 
-        /* Floating doodles */
         .doodle-shape {
             position: absolute;
             bottom: -60px;
@@ -37,7 +38,6 @@
             }
         }
 
-        /* Tabs */
         .pay-tab {
             padding: 10px 18px;
             border-radius: 14px;
@@ -45,6 +45,7 @@
             border: 1px solid rgba(255, 255, 255, 0.13);
             color: #eee;
             transition: 0.3s;
+            cursor: pointer;
         }
 
         .active-tab {
@@ -67,7 +68,6 @@
             box-shadow: 0 0 15px #8c2cff99;
         }
 
-        /* DOODLES CONTAINER FIX */
         .animated-doodles {
             position: fixed;
             inset: 0;
@@ -80,11 +80,10 @@
 
 <body class="text-white font-sans min-h-screen overflow-x-hidden">
 
-    <!-- FIXED DOODLE BACKGROUND -->
     <div class="animated-doodles"></div>
 
-    <!-- CONTENT -->
     <div class="relative z-10">
+
         <!-- HEADER -->
         <header
             class="w-full backdrop-blur-xl bg-white/10 border-b border-purple-300/20 shadow-lg p-5 flex justify-between items-center">
@@ -95,11 +94,6 @@
                 <h1
                     class="text-3xl font-extrabold bg-gradient-to-r from-pink-300 to-purple-200 bg-clip-text text-transparent">
                     YOYO Pay</h1>
-            </div>
-            <div class="flex items-center gap-2 text-xs font-semibold text-gray-200">
-                <span class="hidden md:block">🔒 128-bit SSL Encrypted</span>
-                <span class="bg-green-500/20 px-3 py-1 rounded-xl border border-green-300/40 text-green-300">100% Secure
-                    Payment</span>
             </div>
         </header>
 
@@ -114,47 +108,49 @@
         <!-- MAIN -->
         <div class="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
 
+            <!-- Hidden Django Variables -->
+            <input type="hidden" id="pricePerNight" value="{{ room.price_per_night }}">
+            <input type="hidden" id="taxesFees" value="{{ room.taxes }}">
+            <input type="hidden" id="discount" value="{{ room.discount }}">
+
             <!-- SUMMARY -->
             <aside class="bg-white/10 backdrop-blur-xl rounded-3xl border border-purple-300/20 shadow-xl p-6 h-max">
+
+                <h2 class="text-xl font-bold text-pink-200 mb-4">Available Dates</h2>
+
+                <input id="datePicker" type="text" placeholder="Select your stay"
+                    class="input-card bg-black/40 text-white mb-6 border border-purple-200/50 rounded-xl w-full py-2 px-4 cursor-pointer"
+                    readonly>
+
                 <h2 class="text-xl font-bold text-pink-200 mb-4">Booking Summary</h2>
 
                 <div class="space-y-3 text-sm text-gray-200">
-                    <div>
-                        <p class="font-semibold text-white text-base">Taj Mumbai Hotel</p>
-                        <p class="text-gray-300 text-xs">Premium Sea View Room</p>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3 text-xs">
-                        <div class="bg-white/5 rounded-2xl p-3 border border-white/10">
-                            <p class="uppercase tracking-wide text-[11px] text-gray-300">Check-in</p>
-                            <p class="font-semibold text-white mt-1">14 Mar 2025</p>
-                        </div>
-                        <div class="bg-white/5 rounded-2xl p-3 border border-white/10">
-                            <p class="uppercase tracking-wide text-[11px] text-gray-300">Check-out</p>
-                            <p class="font-semibold text-white mt-1">16 Mar 2025</p>
-                        </div>
-                    </div>
+                    <p class="font-semibold text-white text-base">{{ room.hotel_name }}</p>
+                    <p class="text-gray-300 text-xs">{{ room.room_type_name }}</p>
 
                     <hr class="border-purple-200/20 my-2" />
-                    <div class="flex justify-between text-sm"><span>Room Price</span><span
-                            class="font-semibold">₹6400</span></div>
-                    <div class="flex justify-between text-sm"><span>Taxes & Fees</span><span
-                            class="font-semibold">₹768</span></div>
-                    <div class="flex justify-between text-sm"><span>Discount</span><span
-                            class="font-semibold text-green-300 bg-green-500/15 px-2 py-[2px] rounded-lg">- ₹0</span>
+
+                    <div class="flex justify-between text-sm">
+                        <span>Room Price</span><span id="roomPriceDisplay" class="font-semibold">₹0</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>Taxes & Fees</span><span id="taxesDisplay" class="font-semibold">₹0</span>
                     </div>
 
                     <div
                         class="mt-4 p-4 rounded-2xl bg-black/40 border border-purple-200/30 flex justify-between items-center">
                         <span>Total Payable</span>
-                        <p class="text-3xl font-extrabold text-pink-200">₹7168</p>
+                        <p id="totalPrice" class="text-3xl font-extrabold text-pink-200">₹0</p>
                     </div>
                 </div>
+
             </aside>
 
-            <!-- PAYMENT -->
+            <!-- PAYMENT SECTION -->
             <section
                 class="lg:col-span-2 bg-white/10 backdrop-blur-xl rounded-3xl border border-purple-300/20 shadow-xl p-8">
+
+                <!-- TABS -->
                 <div class="flex gap-3 text-sm mb-6">
                     <button data-tab="upi" class="pay-tab active-tab">UPI / QR</button>
                     <button data-tab="card" class="pay-tab">Card</button>
@@ -164,96 +160,255 @@
                 <!-- UPI -->
                 <div id="tab-upi" class="tab-panel">
                     <div class="grid md:grid-cols-2 gap-8">
-
                         <div
                             class="bg-black/40 rounded-2xl p-6 border border-white/10 flex flex-col items-center text-center">
-                            <p class="text-gray-300 text-sm mb-3">Scan the QR using any UPI app</p>
-
-                            <div
-                                class="p-2 bg-white rounded-2xl shadow-inner w-48 h-48 flex items-center justify-center mb-4">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=upi://pay?pn=YOYOHotels&pa=yoyo@upi&am=7168"
-                                    class="object-contain rounded-xl w-full h-full" />
+                            <p class="text-gray-300 text-sm mb-3">Scan QR</p>
+                            <div class="p-2 bg-white rounded-2xl w-48 h-48 flex items-center justify-center mb-4">
+                                <img id="upiQr" src="" class="object-contain rounded-xl w-full h-full" />
                             </div>
                         </div>
 
                         <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
                             <p class="font-semibold mb-3 text-pink-200">Pay via UPI ID</p>
-                            <label class="text-xs text-gray-300">Enter your UPI ID</label>
-                            <input placeholder="example@upi"
-                                class="w-full mt-1 px-3 py-2 rounded-xl bg-black/40 border border-purple-200/50 text-white placeholder-gray-400" />
-                            <button onclick="startPayment('upi')"
-                                class="mt-5 w-full soft-btn py-3 rounded-xl font-semibold">Pay ₹7168 via UPI</button>
+                            <input placeholder="example@upi" class="input-card mb-4" />
+                            <a id="upiBtn" href="#"
+                                class="block w-full soft-btn py-3 rounded-xl font-semibold text-center text-white">Pay
+                                ₹0</a>
                         </div>
-
                     </div>
                 </div>
 
                 <!-- CARD -->
                 <div id="tab-card" class="tab-panel hidden">
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-                        <p class="text-pink-200 font-semibold">Enter Card Details</p>
                         <input placeholder="Card Number" class="input-card" />
                         <div class="grid grid-cols-3 gap-3">
                             <input placeholder="MM/YY" class="input-card" />
                             <input placeholder="CVV" class="input-card" />
-                            <input placeholder="Card Holder Name" class="input-card" />
+                            <input placeholder="Name" class="input-card" />
                         </div>
-                        <button onclick="startPayment('card')" class="w-full soft-btn py-3 rounded-xl font-semibold">Pay
-                            ₹7168 Securely</button>
+                        <a id="cardBtn" href="#"
+                            class="block w-full soft-btn py-3 rounded-xl font-semibold text-center text-white">Pay ₹0
+                            Securely</a>
                     </div>
                 </div>
 
                 <!-- NETBANKING -->
                 <div id="tab-netbanking" class="tab-panel hidden">
                     <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
-                        <p class="text-pink-200 font-semibold">Select Bank</p>
-                        <select class="input-card bg-black/40 text-white">
-                            <option class="text-black">HDFC Bank</option>
-                            <option class="text-black">ICICI Bank</option>
+                        <select class="input-card text-white bg-black/40">
+                            <option class="text-black">HDFC</option>
+                            <option class="text-black">ICICI</option>
                             <option class="text-black">SBI</option>
-                            <option class="text-black">Axis Bank</option>
-                            <option class="text-black">Kotak Mahindra</option>
                         </select>
-                        <button onclick="startPayment('netbanking')"
-                            class="w-full soft-btn py-3 rounded-xl font-semibold">Pay via NetBanking</button>
+                        <a id="netbankBtn" href="#"
+                            class="block w-full soft-btn py-3 rounded-xl font-semibold text-center text-white">Pay via
+                            NetBanking</a>
                     </div>
                 </div>
+
             </section>
+
         </div>
     </div>
 
-    <!-- DOODLE SCRIPT FIXED -->
     <script>
-        const doodleContainer = document.querySelector('.animated-doodles');
+        window.addEventListener("DOMContentLoaded", () => {
 
-        // ALL DOODLES EXCEPT THE SECOND ONE (REMOVED ⬢)
-        const shapes = ["◆", "✦", "✧", "✪", "●", "◽"];
+            /* ============================================================
+               ANIMATED DOODLES
+            ============================================================ */
+            (function createDoodles() {
+                const doodleContainer = document.querySelector('.animated-doodles');
+                const shapes = ["◆", "✦", "✧", "✪", "●", "◽"];
+                for (let i = 0; i < 35; i++) {
+                    const d = document.createElement('div');
+                    d.innerText = shapes[Math.floor(Math.random() * shapes.length)];
+                    d.classList.add('doodle-shape');
+                    d.style.left = Math.random() * 100 + 'vw';
+                    d.style.animationDuration = 10 + Math.random() * 18 + 's';
+                    d.style.fontSize = 22 + Math.random() * 45 + 'px';
+                    doodleContainer.appendChild(d);
+                }
+            })();
 
-        for (let i = 0; i < 35; i++) {
-            const doodle = document.createElement("div");
-            doodle.innerText = shapes[Math.floor(Math.random() * shapes.length)];
-            doodle.classList.add("doodle-shape");
 
-            doodle.style.left = Math.random() * 100 + "vw";
-            doodle.style.animationDuration = 10 + Math.random() * 18 + "s";
-            doodle.style.fontSize = 22 + Math.random() * 45 + "px";
+            /* ============================================================
+               TABS — UPI / CARD / NETBANKING
+            ============================================================ */
+            document.querySelectorAll(".pay-tab").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".pay-tab").forEach(b => b.classList.remove("active-tab"));
+                    btn.classList.add("active-tab");
 
-            doodleContainer.appendChild(doodle);
-        }
-
-        // Tabs
-        document.querySelectorAll(".pay-tab").forEach(btn => {
-            btn.addEventListener("click", () => {
-                document.querySelectorAll(".pay-tab").forEach(b => b.classList.remove("active-tab"));
-                btn.classList.add("active-tab");
-                document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
-                document.querySelector(`#tab-${btn.dataset.tab}`).classList.remove("hidden");
+                    document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
+                    document.getElementById("tab-" + btn.dataset.tab).classList.remove("hidden");
+                });
             });
-        });
 
-        function startPayment(method) {
-            alert("Redirecting to payment: " + method.toUpperCase());
-        }
+
+            /* ============================================================
+               PRICE LOGIC
+            ============================================================ */
+            const pricePerNight = parseFloat(document.getElementById("pricePerNight").value);
+            const taxesFees = parseFloat(document.getElementById("taxesFees").value);
+
+            const DAY_MS = 24 * 60 * 60 * 1000;
+
+            // Blocked Dates
+            const blockedDates = [
+                "2025-12-13",
+                "2025-12-14",
+                "2025-12-17",
+                "2025-12-20"
+            ];
+            const disabledSet = new Set(blockedDates);
+
+            const roomPriceDisplay = document.getElementById("roomPriceDisplay");
+            const taxesDisplay = document.getElementById("taxesDisplay");
+            const totalPriceEl = document.getElementById("totalPrice");
+
+            const upiBtn = document.getElementById("upiBtn");
+            const cardBtn = document.getElementById("cardBtn");
+            const netbankBtn = document.getElementById("netbankBtn");
+            const upiQr = document.getElementById("upiQr");
+
+            let selectedCheckin = '';
+            let selectedCheckout = '';
+
+
+            /* ============================================================
+               CALCULATE TOTAL PRICE
+            ============================================================ */
+            function setTotals(nights) {
+                const roomTotal = nights * pricePerNight;
+                const total = roomTotal + taxesFees;
+
+                roomPriceDisplay.textContent = `₹${roomTotal}`;
+                taxesDisplay.textContent = `₹${taxesFees}`;
+                totalPriceEl.textContent = `₹${total}`;
+
+                upiBtn.textContent = `Pay ₹${total} via UPI`;
+                cardBtn.textContent = `Pay ₹${total} Securely`;
+                netbankBtn.textContent = `Pay ₹${total} via NetBanking`;
+
+                // Django variables safely inserted
+                const hotelId = "{{ room.hotel_id }}";
+                const roomId = "{{ room.id }}";
+                const hotelName = "{{ room.hotel_name|escapejs }}";
+                const roomType = "{{ room.room_type_name|escapejs }}";
+                const adults = "{{ adults }}";
+
+                print(adults)
+
+                const query =
+                    `?checkin=${selectedCheckin}&checkout=${selectedCheckout}&hotelName=${encodeURIComponent(hotelName)}&total_amount=${total}&room_type=${roomType}&adults=${adults}`;
+
+                const successUrl = `/successfull_payment/${hotelId}/${roomId}/${query}`;
+
+                upiBtn.href = successUrl;
+                cardBtn.href = successUrl;
+                netbankBtn.href = successUrl;
+            }
+
+            function resetTotals() {
+                roomPriceDisplay.textContent = `₹${pricePerNight}`;
+                taxesDisplay.textContent = `₹${taxesFees}`;
+                totalPriceEl.textContent = `₹0`;
+
+                upiBtn.textContent = `Pay ₹0 via UPI`;
+                cardBtn.textContent = `Pay ₹0 Securely`;
+                netbankBtn.textContent = `Pay via NetBanking`;
+
+                upiBtn.href = "#";
+                cardBtn.href = "#";
+                netbankBtn.href = "#";
+            }
+
+            resetTotals();
+
+
+            /* ============================================================
+               BLOCKED DATE RANGE CHECKER
+            ============================================================ */
+            function rangeContainsBlocked(startDate, endDate) {
+                let cur = new Date(startDate);
+                while (cur < endDate) {
+                    const y = cur.getFullYear();
+                    const m = String(cur.getMonth() + 1).padStart(2, "0");
+                    const d = String(cur.getDate()).padStart(2, "0");
+
+                    if (disabledSet.has(`${y}-${m}-${d}`)) return true;
+
+                    cur = new Date(cur.getTime() + DAY_MS);
+                }
+                return false;
+            }
+
+
+            /* ============================================================
+               FLATPICKR — DATE RANGE PICKER
+            ============================================================ */
+            flatpickr("#datePicker", {
+                mode: "range",
+                minDate: "today",
+                dateFormat: "Y-m-d",
+                disable: blockedDates,
+
+                // Add blocked styling
+                onDayCreate(_, __, fp, dayElem) {
+                    const dateStr = fp.formatDate(dayElem.dateObj, "Y-m-d");
+                    if (disabledSet.has(dateStr)) {
+                        dayElem.classList.add(
+                            "bg-red-600",
+                            "text-white",
+                            "font-bold",
+                            "cursor-not-allowed",
+                            "opacity-70"
+                        );
+                    }
+                },
+
+                onChange(selectedDates, dateStr, fp) {
+                    if (selectedDates.length === 0) return resetTotals();
+                    if (selectedDates.length === 1) {
+                        selectedCheckin = fp.formatDate(selectedDates[0], "Y-m-d");
+                        return;
+                    }
+
+                    selectedCheckin = fp.formatDate(selectedDates[0], "Y-m-d");
+                    selectedCheckout = fp.formatDate(selectedDates[1], "Y-m-d");
+
+                    if (rangeContainsBlocked(selectedDates[0], selectedDates[1])) {
+                        fp.clear();
+                        resetTotals();
+                        alert("❌ Your selection includes blocked dates.");
+                        return;
+                    }
+
+                    const nights =
+                        Math.floor((selectedDates[1] - selectedDates[0]) / DAY_MS) || 1;
+
+                    setTotals(nights);
+                }
+            });
+
+
+            /* ============================================================
+               BONUS: Show blocked dates calendar in summary
+            ============================================================ */
+            const blockedDiv = document.createElement("div");
+            blockedDiv.className = "mt-4 p-3 rounded-xl bg-black/30 border border-purple-200/30 text-sm";
+            blockedDiv.innerHTML = `
+        <p class="font-semibold text-pink-200">Blocked Dates:</p>
+        <ul class="list-disc ml-5 mt-2 text-gray-300">
+            ${blockedDates.map(d => `<li>${d}</li>`).join("")}
+        </ul>
+    `;
+
+            document.querySelector("aside").appendChild(blockedDiv);
+
+        });
     </script>
 
 </body>

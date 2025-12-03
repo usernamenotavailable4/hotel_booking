@@ -4,7 +4,10 @@ from django.db import connection
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
 from math import radians, cos, sin, asin, sqrt
+import random
 
+def profile(request) :
+    return render(request,"yoyo_app/profile.html")
 # Create your views here.
 def home (request) :
     return render(request,"yoyo_app/home.html")
@@ -179,7 +182,7 @@ def hotel_detail(request, address_id):
             "price_per_night": room_row[5],
             "available": False,  # Default to unavailable
             "can_accommodate": int(room_row[4]) >= adults,  # Check if room can fit the adults (using max_adults, not description!)
-            "room_type_id": room_row[6]
+            "id": room_row[6]
         }
         
         # Check availability for this room type on the specified date
@@ -196,12 +199,31 @@ def hotel_detail(request, address_id):
         
         rooms.append(room)
         print(f'rooms: {rooms}')
+
+    with connection.cursor() as cursor :
+        cursor.execute("select r.user_id,u.user_name,r.hotel_id,r.rating,r.title,r.body, r.created_at from review as r inner join user as u on u.user_id = r.user_id and hotel_id = %s order by created_at desc;", [address_id])
+        r = cursor.fetchall()
+    
+    reviews = []
+    for review in r:
+        reviews.append({
+            "user_id": review[0],
+            "user_name": review[1],
+            "hotel_id": review[2],
+            "rating": review[3],
+            "title": review[4],
+            "body": review[5],
+            "created_at": review[6],
+        })
+    
+    
     
     context = {
         "hotel": hotel,
         "rooms": rooms,
         "date": date,
         "adults": adults,
+        "reviews": reviews,
     }
     
     return render(request, "yoyo_app/hotel_detail.html", context)
@@ -253,6 +275,11 @@ def register_user(request):
                 # Get the ID of the newly created user
                 cursor.execute("SELECT LAST_INSERT_ID()")
                 user_id = cursor.fetchone()[0]
+                cursor.execute(
+                    "INSERT INTO user (user_id,email,password_hash,role,is_active,user_name) VALUES (%s, %s, %s, %s, %s, %s)",
+                    [user_id,email,hashed_password,"customer",1,username]
+                )
+                print(user_id)
             
             return JsonResponse({
                 'success': True,
@@ -372,13 +399,93 @@ def get_bookings_api(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-def payment(request, room_type_id):
-    """
-    Display bookings page
-    """
-    context = {
-        'room_type_id': room_type_id,
-        'user_id': request.session.get('user_id')
-    }
+
+
+    from django.shortcuts import render
+from django.http import Http404
+from django.db import connection
+
+def payment(request, hotel_id, room_id,adults):
+    # Get query parameters (date, adults, etc.) from URL
+    date = request.GET.get('date', '')
+    hotel_name = request.GET.get('hotelName', '')
+
+    # Fetch the room using raw SQL
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "SELECT r.id, r.hotel_id, r.code, r.name, r.description, r.max_adults, r.price_per_night,h.name FROM room_type as r inner join hotel as h on r.hotel_id = h.id WHERE r.id = %s AND r.hotel_id = %s",
+            [room_id, hotel_id]
+        )
+        row = cursor.fetchone()
     
-    return render(request, 'yoyo_app/payment.html', context)
+    print(row)
+
+    if not row:
+        raise Http404("Room not found")
+
+    # Convert row to a dictionary
+    room = {
+        "id": row[0],
+        "hotel_id": row[1],
+        "code": row[2],
+        "room_type_name": row[3],
+        "description": row[4],
+        "max_adults": row[5],
+        "price_per_night": row[6],
+        "hotel_name": row[7],
+        "taxes": (random.randint(1,3)/10) * int(row[6]),
+        "discount": (random.randint(1,3)/10) * int(row[6]),
+    }
+    print(room)
+
+    context = {
+        "room": room,
+        "date": date,
+        "adults": adults,
+        "hotel_name": hotel_name,
+    }
+
+    return render(request, "yoyo_app/payment.html", context)
+
+def successfull_payment(request,hotel_id,room_id):
+
+    user_id = request.session.get('user_id') 
+    if not user_id:
+        return redirect('login') 
+
+    checkin = request.GET.get('checkin') 
+    checkout = request.GET.get('checkout') 
+    hotel_name = request.GET.get('hotelName')
+    room_type = request.GET.get('room_type')
+    total_amount = request.GET.get('total_amount')
+    adults = request.GET.get('adults')
+    booking_reference = random.randint(100000, 999999)
+    currency = random.choice(['INR', 'USD', 'EUR','GBP','AUD','CAD','CHF','CNY','HKD','NZD','SGD','ZAR','MXN','BRL','JPY','KRW','THB','PHP','IDR','MYR','VND'])
+    status = 'confirmed'
+
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "INSERT INTO bookings (user_id, hotel_id,booking_reference, checkin_date, checkout_date,total_amount,currency,status) VALUES (%s, %s, %s, %s, %s, %s,%s,%s)",
+            [user_id, hotel_id, booking_reference, checkin, checkout, total_amount,currency,status]
+        )   
+    
+    booking_id = cursor.lastrowid
+    with connection.cursor() as cursor:
+        cursor.execute(
+            "call update_inventory(%s,%s,%s);"  ,[hotel_id,room_id,adults]
+        )
+    
+    context = {
+        "hotel_id": hotel_id,
+        "room_id": room_id,
+        "user_id": user_id,
+        "checkin": checkin,
+        "checkout": checkout,
+        "adults": adults,
+        "hotel_name": hotel_name,
+        "room_type": room_type,
+        "total_amount": total_amount,
+    }
+    return render(request, "yoyo_app/successfull_payment.html",context)
+
+    

@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('', views.register, name='register'),
+    path('profile/', views.profile, name='profile'),    
     path('login/', views.login, name='login'),
     path('home/', views.home, name='home'),
     path('api/hotels/', views.hotels_near_location, name="hotels_near_location"),
@@ -13,5 +14,6 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('bookings_history/',views.bookings_history,name='bookings_history'),
     path('api/bookings/',views.get_bookings_api,name='get_bookings_api'),
-    path('payment/<int:room_type_id>/',views.payment,name='payment'),
+    path('payment/<int:hotel_id>/<int:room_id>/<int:adults>/',views.payment,name='payment'),
+    path('successfull_payment/<int:hotel_id>/<int:room_id>/', views.successfull_payment, name='successfull_payment'),
 ]
