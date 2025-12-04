@@ -5,6 +5,8 @@ from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
 from math import radians, cos, sin, asin, sqrt
 import random
+from datetime import timedelta
+import pandas as pd
 
 def profile(request) :
     return render(request,"yoyo_app/profile.html")
@@ -405,25 +407,51 @@ def get_bookings_api(request):
 from django.http import Http404
 from django.db import connection
 
-def payment(request, hotel_id, room_id,adults):
-    # Get query parameters (date, adults, etc.) from URL
+def payment(request, hotel_id, room_id, adults):
+    # GET query params
     date = request.GET.get('date', '')
     hotel_name = request.GET.get('hotelName', '')
 
-    # Fetch the room using raw SQL
+    # -----------------------------------------
+    # FETCH ROOM DETAILS
+    # -----------------------------------------
     with connection.cursor() as cursor:
-        cursor.execute(
-            "SELECT r.id, r.hotel_id, r.code, r.name, r.description, r.max_adults, r.price_per_night,h.name FROM room_type as r inner join hotel as h on r.hotel_id = h.id WHERE r.id = %s AND r.hotel_id = %s",
-            [room_id, hotel_id]
-        )
+        cursor.execute("""
+            SELECT r.id, r.hotel_id, r.code, r.name, r.description, 
+                   r.max_adults, r.price_per_night, h.name
+            FROM room_type AS r 
+            INNER JOIN hotel AS h ON r.hotel_id = h.id 
+            WHERE r.id = %s AND r.hotel_id = %s
+        """, [room_id, hotel_id])
         row = cursor.fetchone()
-    
-    print(row)
 
     if not row:
         raise Http404("Room not found")
 
-    # Convert row to a dictionary
+    # -----------------------------------------
+    # FETCH EXISTING BOOKINGS → BLOCKED DATES
+    # -----------------------------------------
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT checkin_date, checkout_date 
+            FROM bookings 
+            WHERE hotel_id = %s
+        """, [hotel_id])
+        bookings = cursor.fetchall()
+
+    # Important rule:
+    # Block all dates from checkin → checkout - 1
+    blockedDates = {
+        d.strftime("%Y-%m-%d")
+        for checkin, checkout in bookings
+        for d in pd.date_range(start=checkin, end=checkout - timedelta(days=1), freq='D')
+    }
+
+    print("Blocked Dates:", blockedDates)
+
+    # -----------------------------------------
+    # BUILD ROOM DICT
+    # -----------------------------------------
     room = {
         "id": row[0],
         "hotel_id": row[1],
@@ -433,16 +461,19 @@ def payment(request, hotel_id, room_id,adults):
         "max_adults": row[5],
         "price_per_night": row[6],
         "hotel_name": row[7],
-        "taxes": (random.randint(1,3)/10) * int(row[6]),
-        "discount": (random.randint(1,3)/10) * int(row[6]),
+        "taxes": (random.randint(1, 3) / 10) * int(row[6]),
+        "discount": (random.randint(1, 3) / 10) * int(row[6]),
     }
-    print(room)
 
+    # -----------------------------------------
+    # PASS CONTEXT
+    # -----------------------------------------
     context = {
         "room": room,
         "date": date,
         "adults": adults,
         "hotel_name": hotel_name,
+        "blockedDates": list(blockedDates),   # <-- list() to make safe for template
     }
 
     return render(request, "yoyo_app/payment.html", context)

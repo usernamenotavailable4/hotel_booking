@@ -23,7 +23,6 @@
             opacity: 0.35;
             color: rgba(255, 255, 255, 0.5);
             pointer-events: none;
-            user-select: none;
         }
 
         @keyframes floatUp {
@@ -44,7 +43,6 @@
             background: rgba(255, 255, 255, 0.06);
             border: 1px solid rgba(255, 255, 255, 0.13);
             color: #eee;
-            transition: 0.3s;
             cursor: pointer;
         }
 
@@ -73,7 +71,6 @@
             inset: 0;
             overflow: hidden;
             z-index: 0;
-            pointer-events: none;
         }
     </style>
 </head>
@@ -86,23 +83,21 @@
 
         <!-- HEADER -->
         <header
-            class="w-full backdrop-blur-xl bg-white/10 border-b border-purple-300/20 shadow-lg p-5 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div
-                    class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center font-bold text-xl shadow-md">
-                    Y</div>
-                <h1
-                    class="text-3xl font-extrabold bg-gradient-to-r from-pink-300 to-purple-200 bg-clip-text text-transparent">
-                    YOYO Pay</h1>
-            </div>
+            class="w-full backdrop-blur-xl bg-white/10 border-b border-purple-300/20 shadow-lg p-5 flex items-center gap-3">
+            <div
+                class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center font-bold text-xl">
+                Y</div>
+            <h1
+                class="text-3xl font-extrabold bg-gradient-to-r from-pink-300 to-purple-200 bg-clip-text text-transparent">
+                YOYO Pay</h1>
         </header>
 
-        <!-- PROGRESS -->
+        <!-- PROGRESS BAR -->
         <div class="max-w-4xl mx-auto mt-6 mb-4 px-6">
             <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
                 <div class="h-full bg-gradient-to-r from-fuchsia-500 to-purple-600 w-2/3"></div>
             </div>
-            <p class="text-center text-xs mt-2 text-gray-200 tracking-wide">Step 2 of 3 — Payment</p>
+            <p class="text-center text-xs mt-2 text-gray-200">Step 2 of 3 — Payment</p>
         </div>
 
         <!-- MAIN -->
@@ -113,13 +108,16 @@
             <input type="hidden" id="taxesFees" value="{{ room.taxes }}">
             <input type="hidden" id="discount" value="{{ room.discount }}">
 
-            <!-- SUMMARY -->
+            <!-- Fix: Proper JSON-safe blockedDates -->
+            {{ blockedDates|json_script:"blockedDatesJson" }}
+
+            <!-- SIDEBAR -->
             <aside class="bg-white/10 backdrop-blur-xl rounded-3xl border border-purple-300/20 shadow-xl p-6 h-max">
 
                 <h2 class="text-xl font-bold text-pink-200 mb-4">Available Dates</h2>
 
                 <input id="datePicker" type="text" placeholder="Select your stay"
-                    class="input-card bg-black/40 text-white mb-6 border border-purple-200/50 rounded-xl w-full py-2 px-4 cursor-pointer"
+                    class="input-card bg-black/40 text-white mb-6 border border-purple-200/50 rounded-xl w-full py-2 px-4"
                     readonly>
 
                 <h2 class="text-xl font-bold text-pink-200 mb-4">Booking Summary</h2>
@@ -146,7 +144,7 @@
 
             </aside>
 
-            <!-- PAYMENT SECTION -->
+            <!-- PAYMENT -->
             <section
                 class="lg:col-span-2 bg-white/10 backdrop-blur-xl rounded-3xl border border-purple-300/20 shadow-xl p-8">
 
@@ -164,9 +162,13 @@
                             class="bg-black/40 rounded-2xl p-6 border border-white/10 flex flex-col items-center text-center">
                             <p class="text-gray-300 text-sm mb-3">Scan QR</p>
                             <div class="p-2 bg-white rounded-2xl w-48 h-48 flex items-center justify-center mb-4">
-                                <img id="upiQr" src="" class="object-contain rounded-xl w-full h-full" />
+                                <!-- QR that redirects to Rick Astley video -->
+                                <img id="upiQr"
+                                    src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DdQw4w9WgXcQ"
+                                    alt="QR (scan me)" class="object-contain rounded-xl w-full h-full" />
                             </div>
                         </div>
+
 
                         <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
                             <p class="font-semibold mb-3 text-pink-200">Pay via UPI ID</p>
@@ -202,8 +204,9 @@
                             <option class="text-black">SBI</option>
                         </select>
                         <a id="netbankBtn" href="#"
-                            class="block w-full soft-btn py-3 rounded-xl font-semibold text-center text-white">Pay via
-                            NetBanking</a>
+                            class="block w-full soft-btn py-3 rounded-xl font-semibold text-center text-white">
+                            Pay via NetBanking
+                        </a>
                     </div>
                 </div>
 
@@ -215,10 +218,8 @@
     <script>
         window.addEventListener("DOMContentLoaded", () => {
 
-            /* ============================================================
-               ANIMATED DOODLES
-            ============================================================ */
-            (function createDoodles() {
+            /* --------------------- Animated doodles ---------------------- */
+            (() => {
                 const doodleContainer = document.querySelector('.animated-doodles');
                 const shapes = ["◆", "✦", "✧", "✪", "●", "◽"];
                 for (let i = 0; i < 35; i++) {
@@ -232,36 +233,23 @@
                 }
             })();
 
-
-            /* ============================================================
-               TABS — UPI / CARD / NETBANKING
-            ============================================================ */
+            /* --------------------- Tabs ---------------------- */
             document.querySelectorAll(".pay-tab").forEach(btn => {
                 btn.addEventListener("click", () => {
-                    document.querySelectorAll(".pay-tab").forEach(b => b.classList.remove("active-tab"));
+                    document.querySelectorAll(".pay-tab").forEach(x => x.classList.remove("active-tab"));
                     btn.classList.add("active-tab");
 
-                    document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
+                    document.querySelectorAll(".tab-panel").forEach(x => x.classList.add("hidden"));
                     document.getElementById("tab-" + btn.dataset.tab).classList.remove("hidden");
                 });
             });
 
-
-            /* ============================================================
-               PRICE LOGIC
-            ============================================================ */
+            /* --------------------- Price Logic ---------------------- */
             const pricePerNight = parseFloat(document.getElementById("pricePerNight").value);
             const taxesFees = parseFloat(document.getElementById("taxesFees").value);
+            const DAY_MS = 86400000;
 
-            const DAY_MS = 24 * 60 * 60 * 1000;
-
-            // Blocked Dates
-            const blockedDates = [
-                "2025-12-13",
-                "2025-12-14",
-                "2025-12-17",
-                "2025-12-20"
-            ];
+            const blockedDates = JSON.parse(document.getElementById("blockedDatesJson").textContent);
             const disabledSet = new Set(blockedDates);
 
             const roomPriceDisplay = document.getElementById("roomPriceDisplay");
@@ -271,91 +259,74 @@
             const upiBtn = document.getElementById("upiBtn");
             const cardBtn = document.getElementById("cardBtn");
             const netbankBtn = document.getElementById("netbankBtn");
-            const upiQr = document.getElementById("upiQr");
 
-            let selectedCheckin = '';
-            let selectedCheckout = '';
+            let selectedCheckin = "";
+            let selectedCheckout = "";
 
-
-            /* ============================================================
-               CALCULATE TOTAL PRICE
-            ============================================================ */
             function setTotals(nights) {
                 const roomTotal = nights * pricePerNight;
                 const total = roomTotal + taxesFees;
 
-                roomPriceDisplay.textContent = `₹${roomTotal}`;
-                taxesDisplay.textContent = `₹${taxesFees}`;
-                totalPriceEl.textContent = `₹${total}`;
+                roomPriceDisplay.textContent = "₹" + roomTotal;
+                taxesDisplay.textContent = "₹" + taxesFees;
+                totalPriceEl.textContent = "₹" + total;
 
-                upiBtn.textContent = `Pay ₹${total} via UPI`;
-                cardBtn.textContent = `Pay ₹${total} Securely`;
-                netbankBtn.textContent = `Pay ₹${total} via NetBanking`;
-
-                // Django variables safely inserted
                 const hotelId = "{{ room.hotel_id }}";
                 const roomId = "{{ room.id }}";
                 const hotelName = "{{ room.hotel_name|escapejs }}";
                 const roomType = "{{ room.room_type_name|escapejs }}";
                 const adults = "{{ adults }}";
 
-                print(adults)
-
                 const query =
-                    `?checkin=${selectedCheckin}&checkout=${selectedCheckout}&hotelName=${encodeURIComponent(hotelName)}&total_amount=${total}&room_type=${roomType}&adults=${adults}`;
+                    `?checkin=${selectedCheckin}&checkout=${selectedCheckout}&hotelName=${encodeURIComponent(
+                        hotelName
+                    )}&total_amount=${total}&room_type=${roomType}&adults=${adults}`;
 
                 const successUrl = `/successfull_payment/${hotelId}/${roomId}/${query}`;
 
                 upiBtn.href = successUrl;
                 cardBtn.href = successUrl;
                 netbankBtn.href = successUrl;
+
+                upiBtn.textContent = `Pay ₹${total} via UPI`;
+                cardBtn.textContent = `Pay ₹${total} Securely`;
+                netbankBtn.textContent = `Pay via NetBanking`;
             }
 
             function resetTotals() {
-                roomPriceDisplay.textContent = `₹${pricePerNight}`;
-                taxesDisplay.textContent = `₹${taxesFees}`;
-                totalPriceEl.textContent = `₹0`;
-
-                upiBtn.textContent = `Pay ₹0 via UPI`;
-                cardBtn.textContent = `Pay ₹0 Securely`;
-                netbankBtn.textContent = `Pay via NetBanking`;
+                roomPriceDisplay.textContent = "₹0";
+                taxesDisplay.textContent = "₹0";
+                totalPriceEl.textContent = "₹0";
 
                 upiBtn.href = "#";
                 cardBtn.href = "#";
                 netbankBtn.href = "#";
+
+                upiBtn.textContent = "Pay ₹0 via UPI";
+                cardBtn.textContent = "Pay ₹0 Securely";
+                netbankBtn.textContent = "Pay via NetBanking";
             }
 
             resetTotals();
 
-
-            /* ============================================================
-               BLOCKED DATE RANGE CHECKER
-            ============================================================ */
-            function rangeContainsBlocked(startDate, endDate) {
-                let cur = new Date(startDate);
-                while (cur < endDate) {
-                    const y = cur.getFullYear();
-                    const m = String(cur.getMonth() + 1).padStart(2, "0");
-                    const d = String(cur.getDate()).padStart(2, "0");
-
-                    if (disabledSet.has(`${y}-${m}-${d}`)) return true;
-
+            /* --------------------- Check Blocked Range ---------------------- */
+            function rangeContainsBlocked(start, end) {
+                let cur = new Date(start);
+                while (cur <= end) {
+                    const date = cur.toISOString().split("T")[0];
+                    if (disabledSet.has(date)) return true;
                     cur = new Date(cur.getTime() + DAY_MS);
                 }
                 return false;
             }
 
-
-            /* ============================================================
-               FLATPICKR — DATE RANGE PICKER
-            ============================================================ */
+            /* --------------------- Calendar ---------------------- */
             flatpickr("#datePicker", {
                 mode: "range",
-                minDate: "today",
                 dateFormat: "Y-m-d",
+                minDate: "today",
                 disable: blockedDates,
 
-                // Add blocked styling
                 onDayCreate(_, __, fp, dayElem) {
                     const dateStr = fp.formatDate(dayElem.dateObj, "Y-m-d");
                     if (disabledSet.has(dateStr)) {
@@ -369,8 +340,12 @@
                     }
                 },
 
-                onChange(selectedDates, dateStr, fp) {
-                    if (selectedDates.length === 0) return resetTotals();
+                onChange(selectedDates, _, fp) {
+                    if (selectedDates.length === 0) {
+                        resetTotals();
+                        return;
+                    }
+
                     if (selectedDates.length === 1) {
                         selectedCheckin = fp.formatDate(selectedDates[0], "Y-m-d");
                         return;
@@ -381,32 +356,19 @@
 
                     if (rangeContainsBlocked(selectedDates[0], selectedDates[1])) {
                         fp.clear();
+                        alert("❌ Selected date range contains blocked dates.");
                         resetTotals();
-                        alert("❌ Your selection includes blocked dates.");
                         return;
                     }
 
-                    const nights =
-                        Math.floor((selectedDates[1] - selectedDates[0]) / DAY_MS) || 1;
+                    const nights = Math.max(
+                        1,
+                        Math.floor((selectedDates[1] - selectedDates[0]) / DAY_MS)
+                    );
 
                     setTotals(nights);
                 }
             });
-
-
-            /* ============================================================
-               BONUS: Show blocked dates calendar in summary
-            ============================================================ */
-            const blockedDiv = document.createElement("div");
-            blockedDiv.className = "mt-4 p-3 rounded-xl bg-black/30 border border-purple-200/30 text-sm";
-            blockedDiv.innerHTML = `
-        <p class="font-semibold text-pink-200">Blocked Dates:</p>
-        <ul class="list-disc ml-5 mt-2 text-gray-300">
-            ${blockedDates.map(d => `<li>${d}</li>`).join("")}
-        </ul>
-    `;
-
-            document.querySelector("aside").appendChild(blockedDiv);
 
         });
     </script>
