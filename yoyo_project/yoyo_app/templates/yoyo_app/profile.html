@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YOYO Hotels — Profile</title>
+
+    <style>
+        :root {
+            --bg: #1a0f24;
+            --accent: #7f5bff;
+            --muted: rgba(255, 255, 255, 0.75);
+            --glass: rgba(255, 255, 255, 0.06);
+            --radius: 16px;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+        }
+
+        body {
+            margin: 0;
+            padding: 40px;
+            background: #1a0f24;
+            color: #e6eef8;
+            display: flex;
+            justify-content: center;
+
+            /* Background doodles */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:none;stroke:%238e73ff;stroke-opacity:0.32;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;%7D.cls-2%7Bfill:%237f5bff;fill-opacity:0.12;%7D%3C/style%3E%3C/defs%3E%3Crect class='cls-2' width='600' height='600'/%3E%3Cg transform='translate(20 20)'%3E%3Cg transform='scale(0.9)'%3E%3Cpath class='cls-1' d='M40 100 L40 60 L80 40 L120 60 L120 100 Z'/%3E%3Cpath class='cls-1' d='M50 100 L50 140 L110 140 L110 100'/%3E%3Ccircle class='cls-1' cx='80' cy='72' r='6'/%3E%3Cpath class='cls-1' d='M200 200 L200 150 L260 120 L320 150 L320 200 Z'/%3E%3Cpath class='cls-1' d='M220 200 L220 250 L300 250 L300 200'/%3E%3Cpath class='cls-1' d='M400 120 L400 80 L440 60 L480 80 L480 120 Z'/%3E%3Cpath class='cls-1' d='M420 120 L420 170 L460 170 L460 120'/%3E%3Cpath class='cls-1' d='M120 300 L120 250 L170 220 L220 250 L220 300 Z'/%3E%3Cpath class='cls-1' d='M140 300 L140 340 L200 340 L200 300'/%3E%3Cpath class='cls-1' d='M330 320 L330 270 L380 240 L430 270 L430 320 Z'/%3E%3Cpath class='cls-1' d='M350 320 L350 360 L410 360 L410 320'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+
+            background-size: 480px 480px;
+            background-repeat: repeat;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .card {
+            padding: 26px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius);
+            backdrop-filter: blur(22px) saturate(180%);
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.6);
+        }
+
+        h2 {
+            margin: 0 0 12px 0;
+        }
+
+        label {
+            font-size: 14px;
+            color: var(--muted)
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 14px
+        }
+
+        input,
+        select,
+        textarea {
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            outline: none;
+            font-size: 15px;
+            resize: none;
+        }
+
+        textarea {
+            min-height: 80px;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 6px 20px rgba(2, 6, 23, 0.5);
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .avatar {
+            width: 82px;
+            height: 82px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        button.btn {
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 0;
+            background: linear-gradient(90deg, var(--accent), #ffb37b);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .logout {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- PROFILE HEADER -->
+        <div class="card profile-header">
+            <img src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=400&auto=format&fit=crop"
+                alt="Avatar" class="avatar">
+            <div>
+                <h2>Your Profile</h2>
+                <p style="color:var(--muted)">Manage and update your account details</p>
+            </div>
+        </div>
+
+        <!-- BASIC ACCOUNT INFO -->
+        <div class="card">
+            <h2>Account Information</h2>
+
+            <form id="profileForm" onsubmit="return saveProfile(event)">
+                <div class="field">
+                    <label>Full Name</label>
+                    <input id="name" type="text" placeholder="John Doe" required />
+                </div>
+
+                <div class="field">
+                    <label>Email</label>
+                    <input id="email" type="email" placeholder="you@example.com" required />
+                </div>
+
+                <div class="field">
+                    <label>Phone Number</label>
+                    <input id="phone" type="text" placeholder="+91 98765 43210" />
+                </div>
+
+                <div class="field">
+                    <label>City</label>
+                    <input id="city" type="text" placeholder="Mumbai / Delhi / etc" />
+                </div>
+        </div>
+
+        <!-- CONTACT & IDENTITY SECTION -->
+        <div class="card">
+            <h2>Contact & Identity</h2>
+
+            <div class="field">
+                <label>Alternate Phone</label>
+                <input id="altphone" type="text" placeholder="+91 90000 00000" />
+            </div>
+
+            <div class="field">
+                <label>Aadhaar / Passport ID</label>
+                <input id="idcard" type="text" placeholder="XXXX-XXXX-XXXX" />
+            </div>
+
+            <div class="field">
+                <label>Emergency Contact</label>
+                <input id="emergency" type="text" placeholder="Name & number" />
+            </div>
+        </div>
+
+        <!-- TRAVEL PREFERENCES SECTION -->
+        <div class="card">
+            <h2>Travel Preferences</h2>
+
+            <div class="field">
+                <label>Preferred Room Type</label>
+                <select id="roomtype">
+                    <option value="">Select…</option>
+                    <option value="suite">Suite</option>
+                    <option value="deluxe">Deluxe</option>
+                    <option value="standard">Standard</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Preferred Bed Type</label>
+                <select id="bedtype">
+                    <option value="">Select…</option>
+                    <option value="king">King</option>
+                    <option value="queen">Queen</option>
+                    <option value="twin">Twin</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Special Requests</label>
+                <textarea id="requests"
+                    placeholder="e.g., early check-in, high floor, allergy-friendly room"></textarea>
+            </div>
+
+            <!-- Save + Logout Buttons -->
+            <button class="btn" type="submit">Save All Changes</button>
+            <a class="logout" href="{% url 'login' %}">Logout</a>
+        </div>
+
+        </form>
+    </div>
+
+    <script>
+        // Load from storage    
+        window.onload = () => {
+            ["name", "email", "phone", "city", "altphone", "idcard", "emergency", "roomtype", "bedtype", "requests"]
+                .forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = localStorage.getItem(id) || "";
+                });
+        };
+
+        function saveProfile(e) {
+            e.preventDefault();
+            ["name", "email", "phone", "city", "altphone", "idcard", "emergency", "roomtype", "bedtype", "requests"]
+                .forEach(id => {
+                    const el = document.getElementById(id);
+                    localStorage.setItem(id, el.value);
+                });
+
+            alert("Profile updated successfully!");
+        }
+
+        function logout() {
+            alert("Logged out!");
+            window.location.href = "login/";
+        }
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YOYO Hotels — Login</title>
+    <meta name="description" content="Responsive login page for YOYO Hotels with doodle hotel background" />
+    <style>
+        :root {
+            --bg: #1a0f24;
+            --card: #ffffff;
+            --accent: #7f5bff;
+            --muted: rgba(255, 255, 255, 0.75);
+            --glass: rgba(255, 255, 255, 0.06);
+            --glass-2: rgba(255, 255, 255, 0.04);
+            --max-width: 980px;
+            --radius: 14px;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+        }
+
+        /* --- Background doodle pattern: small hotel icons drawn in SVG encoded as data URI --- */
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100%;
+            background-color: var(--bg);
+            color: #e6eef8;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px;
+            box-sizing: border-box;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600' viewBox='0 0 600 600'%3E%3Cdefs%3E%3Cstyle%3E.cls-1%7Bfill:none;stroke:%238e73ff;stroke-opacity:0.32;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;%7D.cls-2%7Bfill:%237f5bff;fill-opacity:0.12;%7D%3C/style%3E%3C/defs%3E%3Crect class='cls-2' width='600' height='600'/%3E%3Cg transform='translate(20 20)'%3E%3Cg transform='scale(0.9)'%3E%3Cpath class='cls-1' d='M40 100 L40 60 L80 40 L120 60 L120 100 Z'/%3E%3Cpath class='cls-1' d='M50 100 L50 140 L110 140 L110 100'/%3E%3Ccircle class='cls-1' cx='80' cy='72' r='6'/%3E%3Cpath class='cls-1' d='M200 200 L200 150 L260 120 L320 150 L320 200 Z'/%3E%3Cpath class='cls-1' d='M220 200 L220 250 L300 250 L300 200'/%3E%3Cpath class='cls-1' d='M400 120 L400 80 L440 60 L480 80 L480 120 Z'/%3E%3Cpath class='cls-1' d='M420 120 L420 170 L460 170 L460 120'/%3E%3Cpath class='cls-1' d='M120 300 L120 250 L170 220 L220 250 L220 300 Z'/%3E%3Cpath class='cls-1' d='M140 300 L140 340 L200 340 L200 300'/%3E%3Cpath class='cls-1' d='M330 320 L330 270 L380 240 L430 270 L430 320 Z'/%3E%3Cpath class='cls-1' d='M350 320 L350 360 L410 360 L410 320'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            background-size: 480px 480px;
+            background-repeat: repeat;
+            background-position: center;
+            transition: background-position 0.6s ease;
+        }
+
+        /* Container */
+        .wrap {
+            width: 100%;
+            max-width: var(--max-width);
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 32px;
+            align-items: center;
+        }
+
+        /* Left hero */
+        .hero {
+            padding: 40px;
+            border-radius: var(--radius);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.012));
+            backdrop-filter: blur(14px) saturate(200%);
+            box-shadow: 0 10px 30px rgba(2, 6, 23, 0.6);
+            backdrop-filter: blur(6px) saturate(120%);
+            min-height: 380px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .logo .badge {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent), #ffb37b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 8px 24px rgba(255, 107, 107, 0.14);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            line-height: 1.02
+        }
+
+        p.lead {
+            margin-top: 10px;
+            color: var(--muted);
+            max-width: 52ch
+        }
+
+        /* Card (right) */
+        .card {
+            padding: 28px;
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.025), rgba(255, 255, 255, 0.015));
+            backdrop-filter: blur(20px) saturate(220%);
+            box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6);
+            backdrop-filter: blur(8px);
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 14px
+        }
+
+        label {
+            font-size: 13px;
+            color: var(--muted);
+            display: block;
+            margin-bottom: 6px
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column
+        }
+
+        input[type=text],
+        input[type=password],
+        input[type=email] {
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: transparent;
+            color: inherit;
+            outline: none;
+            font-size: 15px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+            transition: box-shadow .18s ease, border-color .12s ease, transform .08s ease;
+        }
+
+        input::placeholder {
+            color: rgba(230, 238, 248, 0.35)
+        }
+
+        input:focus {
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 6px 20px rgba(2, 6, 23, 0.5);
+            transform: translateY(-1px)
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            align-items: center
+        }
+
+        .checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 14px
+        }
+
+        button.btn,
+        a.s-btn {
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 0;
+            background: linear-gradient(90deg, var(--accent), #ffb37b);
+            font-weight: 600;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            box-shadow: 0 8px 28px rgba(255, 107, 107, 0.14);
+            transition: transform .12s ease, box-shadow .12s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            justify-content: center;
+            user-select: none;
+        }
+
+        button.btn:active,
+        a.s-btn:active {
+            transform: translateY(1px)
+        }
+
+        .alt {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--muted);
+            font-size: 13px
+        }
+
+        .link {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            opacity: 0.95
+        }
+
+        .social {
+            display: flex;
+            gap: 10px
+        }
+
+        .footer {
+            display: flex;
+            justify-content: center;
+            margin-top: 24px;
+            font-size: 14px;
+            color: #ffffff;
+            gap: 8px;
+            opacity: 0.95;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+
+        /* Responsive */
+        @media (max-width:980px) {
+            .wrap {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 22px
+            }
+        }
+
+        @media (max-width:520px) {
+            .hero {
+                padding: 20px
+            }
+
+            .card {
+                padding: 18px
+            }
+
+            h1 {
+                font-size: 22px
+            }
+
+            .logo .badge {
+                width: 46px;
+                height: 46px
+            }
+        }
+
+        /* small animated accents */
+        .sparkle {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            opacity: 0.08;
+            font-size: 64px;
+            transform: rotate(-12deg)
+        }
+
+        /* accessible focus states */
+        input:focus,
+        button:focus,
+        a:focus {
+            outline: 3px solid rgba(255, 107, 107, 0.12);
+            outline-offset: 3px
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap" role="main">
+        <section class="hero" aria-labelledby="welcome">
+            <div class="logo">
+                <div class="badge">YY</div>
+                <div>
+                    <div style="font-size:12px;color:var(--muted);letter-spacing:1px">YOYO HOTELS</div>
+                    <div style="font-weight:700;font-size:14px">Hospitality made playful</div>
+                </div>
+            </div>
+            <h1 id="welcome">Welcome back — ready to host?</h1>
+            <p class="lead">Sign in to manage bookings, update your listing, or check today's arrivals. Clean,
+                responsive, and crafted to match your hotel's personality.</p>
+            <div style="margin-top:18px;color:var(--muted);font-size:14px">Tip: try the demo credentials
+                <strong>yoyo</strong> / <strong>example</strong>
+            </div>
+        </section>
+
+        <aside class="card" aria-labelledby="login-title">
+            <h2 id="login-title" style="margin:0 0 6px 0;color:#fff">Sign in to your account</h2>
+            <p style="margin:0 0 16px 0;color:var(--muted);font-size:13px">Use your email and password or continue with
+                one of the providers below.</p>
+
+            <form id="loginForm" onsubmit="return handleSubmit(event)" autocomplete="on">
+                <div class="field">
+                    <label for="username">Username</label>
+                    <input id="username" name="username" type="text" placeholder="you@hotel.com" required />
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" placeholder="Enter your password" required
+                        minlength="6" />
+                </div>
+
+                <div class="row" style="justify-content:space-between;align-items:center;margin-top:4px">
+                    <label class="checkbox"><input type="checkbox" id="remember" /> Remember me</label>
+                    <a class="link" href="#">Forgot?</a>
+                </div>
+
+                <div style="margin-top:6px">
+                    <button class="btn" type="submit">Sign in</button>
+                </div>
+
+                <div class="alt" style="margin-top:8px">
+                    <div style="font-size:13px;color:var(--muted)">or continue with</div>
+                    <div class="social">
+                        <a class="s-btn" href="/accounts/google/login/">Google</a>
+                        <a class="s-btn" href="#" onclick="alert('Apple login integration coming soon')">Apple</a>
+                    </div>
+                </div>
+
+                <div class="footer">Don't have an account? <a class="link" href="{% url 'register' %}">Create one →
+                    </a>
+                </div>
+            </form>
+        </aside>
+    </div>
+
+    <script>
+        // small UI polish: parallax background shift on mouse move
+        (function () {
+            const body = document.body;
+            let lastX = 0, lastY = 0;
+            function move(e) {
+                const x = (e.clientX / window.innerWidth - 0.5) * 30;
+                const y = (e.clientY / window.innerHeight - 0.5) * 30;
+                body.style.backgroundPosition = `calc(50% + ${x}px) calc(50% + ${y}px)`;
+            }
+            window.addEventListener('mousemove', move);
+        })();
+
+        // Username/password login form submission handler
+        function handleSubmit(e) {
+            e.preventDefault();
+            const f = e.target;
+            const data = {
+                email: f.username.value.trim(),
+                password: f.password.value,
+                remember: f.remember.checked
+            };
+
+            if (!data.email || !data.password) {
+                alert('Please fill all fields');
+                return false;
+            }
+
+            fetch('/api/login/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.success) {
+                        alert('Login successful!');
+                        window.location.href = '/home/';
+                    } else {
+                        alert(result.error || 'Login failed');
+                    }
+                })
+                .catch(error => {
+                    console.error('Login error:', error);
+                    alert('An error occurred. Please try again.');
+                });
+
+            return false;
+        }
+    </script>
+</body>
+
+</html>

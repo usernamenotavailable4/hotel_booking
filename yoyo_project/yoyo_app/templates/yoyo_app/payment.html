@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YOYO Pay — Secure Checkout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+
+    <style>
+        body {
+            background: radial-gradient(circle at top, #3b0066, #1b002e, #0d0018);
+        }
+
+        .doodle-shape {
+            position: absolute;
+            bottom: -60px;
+            animation: floatUp linear infinite;
+            font-weight: 700;
+            opacity: 0.35;
+            color: rgba(255, 255, 255, 0.5);
+            pointer-events: none;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+
+            100% {
+                transform: translateY(-150vh);
+                opacity: 0;
+            }
+        }
+
+        .pay-tab {
+            padding: 10px 18px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            color: #eee;
+            cursor: pointer;
+        }
+
+        .active-tab {
+            background: linear-gradient(to right, #f032c9, #7d1cff, #b44cff);
+            border-color: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 18px #8c2cff88;
+        }
+
+        .input-card {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(200, 150, 255, 0.4);
+            color: white;
+        }
+
+        .soft-btn {
+            background: linear-gradient(to right, #f032c9, #7d1cff);
+            box-shadow: 0 0 15px #8c2cff99;
+        }
+
+        .animated-doodles {
+            position: fixed;
+            inset: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+    </style>
+</head>
+
+<body class="text-white font-sans min-h-screen overflow-x-hidden">
+
+    <div class="animated-doodles"></div>
+
+    <div class="relative z-10">
+
+        <!-- HEADER -->
+        <header
+            class="w-full backdrop-blur-xl bg-white/10 border-b border-purple-300/20 shadow-lg p-5 flex items-center gap-3">
+            <div
+                class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-400 to-purple-500 flex items-center justify-center font-bold text-xl">
+                Y</div>
+            <h1
+                class="text-3xl font-extrabold bg-gradient-to-r from-pink-300 to-purple-200 bg-clip-text text-transparent">
+                YOYO Pay</h1>
+        </header>
+
+        <!-- PROGRESS BAR -->
+        <div class="max-w-4xl mx-auto mt-6 mb-4 px-6">
+            <div class="w-full bg-white/10 h-2 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-fuchsia-500 to-purple-600 w-2/3"></div>
+            </div>
+            <p class="text-center text-xs mt-2 text-gray-200">Step 2 of 3 — Payment</p>
+        </div>
+
+        <!-- MAIN -->
+        <div class="max-w-6xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Hidden Django Variables -->
+            <input type="hidden" id="pricePerNight" value="{{ room.price_per_night }}">
+            <input type="hidden" id="taxesFees" value="{{ room.taxes }}">
+            <input type="hidden" id="discount" value="{{ room.discount }}">
+
+            <!-- Fix: Proper JSON-safe blockedDates -->
+            {{ blockedDates|json_script:"blockedDatesJson" }}
+
+            <!-- SIDEBAR -->
+            <aside class="bg-white/10 backdrop-blur-xl rounded-3xl border border-purple-300/20 shadow-xl p-6 h-max">
+
+                <h2 class="text-xl font-bold text-pink-200 mb-4">Available Dates</h2>
+
+                <input id="datePicker" type="text" placeholder="Select your stay"
+                    class="input-card bg-black/40 text-white mb-6 border border-purple-200/50 rounded-xl w-full py-2 px-4"
+                    readonly>
+
+                <h2 class="text-xl font-bold text-pink-200 mb-4">Booking Summary</h2>
+
+                <div class="space-y-3 text-sm text-gray-200">
+                    <p class="font-semibold text-white text-base">{{ room.hotel_name }}</p>
+                    <p class="text-gray-300 text-xs">{{ room.room_type_name }}</p>
+
+                    <hr class="border-purple-200/20 my-2" />
+
+                    <div class="flex justify-between text-sm">
+                        <span>Room Price</span><span id="roomPriceDisplay" class="font-semibold">₹0</span>
+                    </div>
+                    <div class="flex justify-between text-sm">
+                        <span>Taxes & Fees</span><span id="taxesDisplay" class="font-semibold">₹0</span>
+                    </div>
+
+                    <div
+                        class="mt-4 p-4 rounded-2xl bg-black/40 border border-purple-200/30 flex justify-between items-center">
+                        <span>Total Payable</span>
+                        <p id="totalPrice" class="text-3xl font-extrabold text-pink-200">₹0</p>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- PAYMENT -->
+            <section
+                class="lg:col-span-2 bg-white/10 backdrop-blur-xl rounded-3xl border border-purple-300/20 shadow-xl p-8">
+
+                <!-- TABS -->
+                <div class="flex gap-3 text-sm mb-6">
+                    <button data-tab="upi" class="pay-tab active-tab">UPI / QR</button>
+                    <button data-tab="card" class="pay-tab">Card</button>
+                    <button data-tab="netbanking" class="pay-tab">Netbanking</button>
+                </div>
+
+                <!-- UPI -->
+                <div id="tab-upi" class="tab-panel">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div
+                            class="bg-black/40 rounded-2xl p-6 border border-white/10 flex flex-col items-center text-center">
+                            <p class="text-gray-300 text-sm mb-3">Scan QR</p>
+                            <div class="p-2 bg-white rounded-2xl w-48 h-48 flex items-center justify-center mb-4">
+                                <!-- QR that redirects to Rick Astley video -->
+                                <img id="upiQr"
+                                    src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DdQw4w9WgXcQ"
+                                    alt="QR (scan me)" class="object-contain rounded-xl w-full h-full" />
+                            </div>
+                        </div>
+
+
+                        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+                            <p class="font-semibold mb-3 text-pink-200">Pay via UPI ID</p>
+                            <input placeholder="example@upi" class="input-card mb-4" />
+                            <a id="upiBtn" href="#"
+                                class="block w-full soft-btn py-3 rounded-xl font-semibold text-center text-white">Pay
+                                ₹0</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD -->
+                <div id="tab-card" class="tab-panel hidden">
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+                        <input placeholder="Card Number" class="input-card" />
+                        <div class="grid grid-cols-3 gap-3">
+                            <input placeholder="MM/YY" class="input-card" />
+                            <input placeholder="CVV" class="input-card" />
+                            <input placeholder="Name" class="input-card" />
+                        </div>
+                        <a id="cardBtn" href="#"
+                            class="block w-full soft-btn py-3 rounded-xl font-semibold text-center text-white">Pay ₹0
+                            Securely</a>
+                    </div>
+                </div>
+
+                <!-- NETBANKING -->
+                <div id="tab-netbanking" class="tab-panel hidden">
+                    <div class="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+                        <select class="input-card text-white bg-black/40">
+                            <option class="text-black">HDFC</option>
+                            <option class="text-black">ICICI</option>
+                            <option class="text-black">SBI</option>
+                        </select>
+                        <a id="netbankBtn" href="#"
+                            class="block w-full soft-btn py-3 rounded-xl font-semibold text-center text-white">
+                            Pay via NetBanking
+                        </a>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+
+            /* --------------------- Animated doodles ---------------------- */
+            (() => {
+                const doodleContainer = document.querySelector('.animated-doodles');
+                const shapes = ["◆", "✦", "✧", "✪", "●", "◽"];
+                for (let i = 0; i < 35; i++) {
+                    const d = document.createElement('div');
+                    d.innerText = shapes[Math.floor(Math.random() * shapes.length)];
+                    d.classList.add('doodle-shape');
+                    d.style.left = Math.random() * 100 + 'vw';
+                    d.style.animationDuration = 10 + Math.random() * 18 + 's';
+                    d.style.fontSize = 22 + Math.random() * 45 + 'px';
+                    doodleContainer.appendChild(d);
+                }
+            })();
+
+            /* --------------------- Tabs ---------------------- */
+            document.querySelectorAll(".pay-tab").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    document.querySelectorAll(".pay-tab").forEach(x => x.classList.remove("active-tab"));
+                    btn.classList.add("active-tab");
+
+                    document.querySelectorAll(".tab-panel").forEach(x => x.classList.add("hidden"));
+                    document.getElementById("tab-" + btn.dataset.tab).classList.remove("hidden");
+                });
+            });
+
+            /* --------------------- Price Logic ---------------------- */
+            const pricePerNight = parseFloat(document.getElementById("pricePerNight").value);
+            const taxesFees = parseFloat(document.getElementById("taxesFees").value);
+            const DAY_MS = 86400000;
+
+            const blockedDates = JSON.parse(document.getElementById("blockedDatesJson").textContent);
+            const disabledSet = new Set(blockedDates);
+
+            const roomPriceDisplay = document.getElementById("roomPriceDisplay");
+            const taxesDisplay = document.getElementById("taxesDisplay");
+            const totalPriceEl = document.getElementById("totalPrice");
+
+            const upiBtn = document.getElementById("upiBtn");
+            const cardBtn = document.getElementById("cardBtn");
+            const netbankBtn = document.getElementById("netbankBtn");
+
+            let selectedCheckin = "";
+            let selectedCheckout = "";
+
+            function setTotals(nights) {
+                const roomTotal = nights * pricePerNight;
+                const total = roomTotal + taxesFees;
+
+                roomPriceDisplay.textContent = "₹" + roomTotal;
+                taxesDisplay.textContent = "₹" + taxesFees;
+                totalPriceEl.textContent = "₹" + total;
+
+                const hotelId = "{{ room.hotel_id }}";
+                const roomId = "{{ room.id }}";
+                const hotelName = "{{ room.hotel_name|escapejs }}";
+                const roomType = "{{ room.room_type_name|escapejs }}";
+                const adults = "{{ adults }}";
+
+                const query =
+                    `?checkin=${selectedCheckin}&checkout=${selectedCheckout}&hotelName=${encodeURIComponent(
+                        hotelName
+                    )}&total_amount=${total}&room_type=${roomType}&adults=${adults}`;
+
+                const successUrl = `/successfull_payment/${hotelId}/${roomId}/${query}`;
+
+                upiBtn.href = successUrl;
+                cardBtn.href = successUrl;
+                netbankBtn.href = successUrl;
+
+                upiBtn.textContent = `Pay ₹${total} via UPI`;
+                cardBtn.textContent = `Pay ₹${total} Securely`;
+                netbankBtn.textContent = `Pay via NetBanking`;
+            }
+
+            function resetTotals() {
+                roomPriceDisplay.textContent = "₹0";
+                taxesDisplay.textContent = "₹0";
+                totalPriceEl.textContent = "₹0";
+
+                upiBtn.href = "#";
+                cardBtn.href = "#";
+                netbankBtn.href = "#";
+
+                upiBtn.textContent = "Pay ₹0 via UPI";
+                cardBtn.textContent = "Pay ₹0 Securely";
+                netbankBtn.textContent = "Pay via NetBanking";
+            }
+
+            resetTotals();
+
+            /* --------------------- Check Blocked Range ---------------------- */
+            function rangeContainsBlocked(start, end) {
+                let cur = new Date(start);
+                while (cur <= end) {
+                    const date = cur.toISOString().split("T")[0];
+                    if (disabledSet.has(date)) return true;
+                    cur = new Date(cur.getTime() + DAY_MS);
+                }
+                return false;
+            }
+
+            /* --------------------- Calendar ---------------------- */
+            flatpickr("#datePicker", {
+                mode: "range",
+                dateFormat: "Y-m-d",
+                minDate: "today",
+                disable: blockedDates,
+
+                onDayCreate(_, __, fp, dayElem) {
+                    const dateStr = fp.formatDate(dayElem.dateObj, "Y-m-d");
+                    if (disabledSet.has(dateStr)) {
+                        dayElem.classList.add(
+                            "bg-red-600",
+                            "text-white",
+                            "font-bold",
+                            "cursor-not-allowed",
+                            "opacity-70"
+                        );
+                    }
+                },
+
+                onChange(selectedDates, _, fp) {
+                    if (selectedDates.length === 0) {
+                        resetTotals();
+                        return;
+                    }
+
+                    if (selectedDates.length === 1) {
+                        selectedCheckin = fp.formatDate(selectedDates[0], "Y-m-d");
+                        return;
+                    }
+
+                    selectedCheckin = fp.formatDate(selectedDates[0], "Y-m-d");
+                    selectedCheckout = fp.formatDate(selectedDates[1], "Y-m-d");
+
+                    if (rangeContainsBlocked(selectedDates[0], selectedDates[1])) {
+                        fp.clear();
+                        alert("❌ Selected date range contains blocked dates.");
+                        resetTotals();
+                        return;
+                    }
+
+                    const nights = Math.max(
+                        1,
+                        Math.floor((selectedDates[1] - selectedDates[0]) / DAY_MS)
+                    );
+
+                    setTotals(nights);
+                }
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>
