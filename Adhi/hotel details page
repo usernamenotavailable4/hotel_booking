@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ hotel.name }} — YOYO Hotels</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* Subtle grain / noise effect for matte feel */
+        body {
+            background-image: radial-gradient(circle at 0 0, rgba(255, 255, 255, 0.06) 0, transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.04) 0, transparent 55%);
+        }
+
+        /* Nice scroll behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+
+<body
+    class="min-h-screen bg-gradient-to-br from-purple-950 via-purple-900 to-slate-950 text-white font-sans flex flex-col">
+
+    <!-- Hidden values to send to payment page -->
+    <input type="hidden" id="date" value="{{ date }}">
+    <input type="hidden" id="adults" value="{{ adults }}">
+    <input type="hidden" id="hotel_id" value="{{ hotel.id }}">
+    <input type="hidden" id="hotel_name" value="{{ hotel.name }}">
+    <input type="hidden" id="room_type_id" value="{{ room_type.id }}">
+
+    <!-- Navbar -->
+    <nav
+        class="sticky top-0 z-30 backdrop-blur-2xl bg-purple-950/60 border-b border-white/10 shadow-lg shadow-purple-900/40">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2">
+                <span
+                    class="inline-flex h-9 w-9 rounded-2xl bg-gradient-to-br from-purple-400 via-fuchsia-400 to-indigo-400 shadow-lg shadow-purple-900/60 items-center justify-center text-xl font-black">
+                    Y
+                </span>
+                <span class="text-2xl font-extrabold tracking-tight">
+                    YOYO <span class="text-purple-300">Hotels</span>
+                </span>
+            </a>
+            <div class="flex items-center gap-3 text-sm">
+                <a href="/home"
+                    class="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-300/70 transition-all flex items-center gap-1">
+                    <span>←</span>
+                    <span>Back to Search</span>
+                </a>
+                <a href="/bookings"
+                    class="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-purple-300/70 transition-all">
+                    Bookings
+                </a>
+                <a href="#login"
+                    class="px-4 py-1.5 rounded-full bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500 text-white font-semibold shadow-lg shadow-purple-900/70 hover:shadow-purple-700/80 hover:scale-[1.02] transition-all">
+                    Login
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="flex-1">
+        <div class="max-w-6xl mx-auto px-4 py-8 space-y-8">
+
+            <!-- Top section: Hotel + Search summary in glass card -->
+            <section
+                class="rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/15 shadow-[0_18px_60px_rgba(0,0,0,0.55)] p-6 lg:p-8 space-y-6">
+
+                <!-- Search Criteria Summary -->
+                <div
+                    class="rounded-2xl bg-black/20 border border-white/10 px-4 py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                    <div>
+                        <h3 class="text-sm font-semibold text-purple-200/90 uppercase tracking-[0.18em]">Your Search</h3>
+                        <p class="text-xs text-purple-100/70 mt-1">
+                            Personalised recommendations based on your filters
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2 text-sm">
+                        <span
+                            class="px-3 py-1 rounded-full bg-purple-900/60 border border-purple-300/30 text-purple-100 flex items-center gap-1">
+                            <span class="text-xs uppercase tracking-wide text-purple-300">Date</span>
+                            <span class="font-semibold">{{ date|default:"Not specified" }}</span>
+                        </span>
+                        <span
+                            class="px-3 py-1 rounded-full bg-purple-900/60 border border-purple-300/30 text-purple-100 flex items-center gap-1">
+                            <span class="text-xs uppercase tracking-wide text-purple-300">Adults</span>
+                            <span class="font-semibold">{{ adults }}</span>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Hotel Information -->
+                <div class="grid lg:grid-cols-[minmax(0,2fr)_minmax(0,1.3fr)] gap-6 lg:gap-8 items-start">
+                    <!-- Left: Hotel text -->
+                    <div class="space-y-4">
+                        <div class="space-y-2">
+                            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">
+                                {{ hotel.name }}
+                            </h1>
+                            <p class="text-sm md:text-base text-purple-100/70">
+                                {{ hotel.slug }}
+                            </p>
+                        </div>
+
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-1 text-yellow-400 text-xl">
+                                {% for i in "12345"|make_list %}
+                                    {% if forloop.counter <= hotel.star_rating %}
+                                        ⭐
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="text-xs md:text-sm text-purple-100/80">
+                                <span class="font-semibold">{{ hotel.star_rating }}-Star</span> · Curated stay by
+                                <span class="font-semibold text-purple-200">YOYO Hotels</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-white/10">
+                            <p class="text-sm font-semibold text-purple-200 tracking-wide uppercase mb-2">
+                                Description
+                            </p>
+                            <p class="text-sm md:text-base text-purple-100/80 leading-relaxed">
+                                {{ hotel.description }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Right: Highlight card -->
+                    <div
+                        class="rounded-2xl bg-gradient-to-br from-purple-500/30 via-fuchsia-500/20 to-indigo-500/25 border border-purple-200/30 shadow-xl shadow-purple-900/60 p-5 flex flex-col gap-4">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-xs font-semibold tracking-[0.22em] uppercase text-purple-100/80">
+                                    Rating
+                                </p>
+                                <div class="flex items-end gap-2 mt-2">
+                                    <span class="text-3xl font-black text-white">
+                                        {{ hotel.average_rating|default:"4.5" }}
+                                    </span>
+                                    <span class="text-xs text-purple-100/80">
+                                        /5 · {{ reviews|length }} reviews
+                                    </span>
+                                </div>
+                            </div>
+                            <div
+                                class="px-3 py-1 rounded-full bg-black/20 border border-white/20 text-xs text-purple-100/90">
+                                YOYO Verified
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 text-xs text-purple-100/85">
+                            <div class="rounded-xl bg-black/20 border border-white/10 p-3">
+                                <p class="text-[0.65rem] uppercase tracking-wide text-purple-300/90 mb-1">
+                                    Perfect for
+                                </p>
+                                <p class="font-medium">
+                                    {{ adults }} adults stay
+                                </p>
+                            </div>
+                            <div class="rounded-xl bg-black/20 border border-white/10 p-3">
+                                <p class="text-[0.65rem] uppercase tracking-wide text-purple-300/90 mb-1">
+                                    Booking date
+                                </p>
+                                <p class="font-medium">
+                                    {{ date|default:"Flexible" }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-1">
+                            <p class="text-[0.7rem] text-purple-100/80">
+                                Secure your stay now. You’ll be redirected to the payment page after choosing your room.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Available Rooms -->
+            <section
+                class="rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/15 shadow-[0_18px_60px_rgba(0,0,0,0.60)] p-6 lg:p-8">
+                <div class="flex items-center justify-between gap-3 mb-6">
+                    <h2 class="text-2xl font-bold tracking-tight text-white">
+                        Available Rooms
+                    </h2>
+                    <p class="text-xs md:text-sm text-purple-100/70">
+                        Showing options that match your preferences
+                    </p>
+                </div>
+
+                {% if rooms %}
+                <div class="space-y-4">
+
+                    {% for room in rooms %}
+                    <input type="hidden" id="room_id_{{ room.id }}" value="{{ room.id }}">
+
+                    <div
+                        class="relative rounded-2xl border backdrop-blur-xl p-4 md:p-5 transition-all group
+                        {% if room.available %}
+                            bg-emerald-500/10 border-emerald-300/35 hover:border-emerald-200/80 hover:bg-emerald-400/15
+                        {% else %}
+                            bg-slate-900/40 border-slate-500/40 opacity-80
+                        {% endif %}">
+                        <!-- Accent bar -->
+                        <span
+                            class="absolute inset-y-3 left-3 w-1 rounded-full
+                            {% if room.available %}
+                                bg-gradient-to-b from-emerald-300 via-emerald-400 to-emerald-500
+                            {% else %}
+                                bg-gradient-to-b from-slate-400 via-slate-500 to-slate-600
+                            {% endif %}">
+                        </span>
+
+                        <div class="pl-5 md:pl-6 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+
+                            <div class="flex-1 space-y-2">
+                                <h3 class="text-lg md:text-xl font-semibold text-white">
+                                    {{ room.room_type_name }}
+                                </h3>
+                                <p class="text-sm text-purple-100/80">
+                                    {{ room.description }}
+                                </p>
+
+                                <div class="mt-3 flex flex-wrap gap-3 text-xs md:text-sm text-purple-100/90">
+                                    <span
+                                        class="px-3 py-1 rounded-full bg-black/20 border border-white/10 flex items-center gap-1.5">
+                                        <span class="text-[0.65rem] uppercase tracking-wide text-purple-300">Max
+                                            adults</span>
+                                        <span class="font-semibold">{{ room.max_adults }}</span>
+                                    </span>
+
+                                    {% if room.can_accommodate %}
+                                    <span
+                                        class="px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-300/60 text-emerald-100 flex items-center gap-1.5">
+                                        <span class="text-lg leading-none">✓</span>
+                                        <span class="text-xs">Can accommodate {{ adults }} adults</span>
+                                    </span>
+                                    {% else %}
+                                    <span
+                                        class="px-3 py-1 rounded-full bg-red-500/20 border border-red-300/60 text-red-100 flex items-center gap-1.5">
+                                        <span class="text-lg leading-none">✗</span>
+                                        <span class="text-xs">Cannot accommodate {{ adults }} adults</span>
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="text-right space-y-2 min-w-[150px]">
+                                <div>
+                                    <p class="text-xs uppercase tracking-[0.19em] text-purple-200/80 mb-1">
+                                        From
+                                    </p>
+                                    <p class="text-2xl font-extrabold text-purple-100">
+                                        ₹{{ room.price_per_night }}
+                                    </p>
+                                    <p class="text-[0.7rem] text-purple-100/75">
+                                        per night · taxes extra
+                                    </p>
+                                </div>
+
+                                {% if room.available %}
+                                <button
+                                    onclick="sendData('{{ hotel.address_id }}', '{{ room.id }}', '{{ adults }}')"
+                                    class="mt-2 inline-flex justify-center items-center gap-1.5 w-full px-4 py-2.5 rounded-xl text-sm font-semibold
+                                    bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500
+                                    hover:from-purple-400 hover:via-fuchsia-400 hover:to-indigo-400
+                                    shadow-lg shadow-purple-900/70 hover:shadow-purple-700/80
+                                    hover:scale-[1.02] active:scale-[0.99]
+                                    transition-all">
+                                    <span>Book Now</span>
+                                    <span class="text-xs opacity-90">→</span>
+                                </button>
+                                {% else %}
+                                <button
+                                    class="mt-2 inline-flex justify-center items-center w-full px-4 py-2.5 rounded-xl text-sm font-semibold
+                                    bg-slate-700/70 text-slate-200 cursor-not-allowed border border-slate-500/70">
+                                    Not Available
+                                </button>
+                                {% endif %}
+                            </div>
+
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                {% else %}
+                <p class="text-purple-100/80 text-center py-10 text-sm">
+                    No rooms available for this hotel on the selected date. Try changing your dates or filters.
+                </p>
+                {% endif %}
+            </section>
+
+            <!-- Review Section -->
+            <section
+                class="rounded-3xl bg-white/5 backdrop-blur-2xl border border-white/15 shadow-[0_18px_60px_rgba(0,0,0,0.60)] p-6 lg:p-8 space-y-6">
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold tracking-tight text-white">
+                            Guest Reviews
+                        </h2>
+                        <p class="text-xs md:text-sm text-purple-100/75 mt-1">
+                            See what other guests loved about {{ hotel.name }}
+                        </p>
+                    </div>
+
+                    <!-- Average Rating -->
+                    <div
+                        class="flex items-center gap-3 rounded-2xl bg-black/25 border border-white/10 px-4 py-3 min-w-[220px]">
+                        <div class="text-3xl text-yellow-400 leading-none">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= hotel.average_rating %}
+                                    ⭐
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <div class="flex flex-col">
+                            <p class="text-lg font-semibold text-white">
+                                {{ hotel.average_rating|default:"4.5" }}/5
+                            </p>
+                            <p class="text-xs text-purple-100/80">
+                                Based on {{ reviews|length }} reviews
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Review List -->
+                <div class="space-y-4 mt-4">
+                    {% for review in reviews %}
+                    <div
+                        class="p-4 md:p-5 rounded-2xl bg-black/25 border border-white/10 hover:border-purple-200/60 transition-all">
+                        <div class="flex items-start justify-between gap-2">
+                            <div>
+                                <p class="font-semibold text-white text-sm md:text-base">
+                                    {{ review.user_name }}
+                                </p>
+                                <div class="text-yellow-400 text-sm mt-1">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= review.rating %}
+                                            ⭐
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="text-xs text-purple-100/70">
+                                {{ review.created_at|date:"M d, Y" }}
+                            </p>
+                        </div>
+                        <p class="mt-3 text-sm text-purple-100/85 leading-relaxed">
+                            {{ review.body }}
+                        </p>
+                    </div>
+                    {% empty %}
+                    <p class="text-purple-100/75 text-center text-sm py-6">
+                        No reviews yet. Be the first to share your experience!
+                    </p>
+                    {% endfor %}
+                </div>
+
+                <!-- Add Review Button -->
+                <div class="text-center mt-6">
+                    <a href="/add-review/{{ hotel.id }}/"
+                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold
+                        bg-gradient-to-r from-purple-500 via-fuchsia-500 to-indigo-500
+                        hover:from-purple-400 hover:via-fuchsia-400 hover:to-indigo-400
+                        shadow-lg shadow-purple-900/70 hover:shadow-purple-700/90
+                        hover:scale-[1.02] active:scale-[0.99]
+                        transition-all">
+                        <span>Write a Review</span>
+                        <span class="text-xs">✍️</span>
+                    </a>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer
+        class="mt-10 border-t border-white/10 bg-black/40 backdrop-blur-xl py-5 text-center text-[0.8rem] text-purple-100/80">
+        © 2025 <span class="font-semibold text-purple-200">YOYO Hotels</span> — Built by
+        <span class="font-semibold">Darren · Ashutosh · Sharon · Adhi</span>
+    </footer>
+
+    <!-- Redirect Logic -->
+    <script>
+        function sendData(addressId, roomId, adults) {
+            console.log("Room ID:", roomId);
+
+            if (!roomId) {
+                console.error("ROOM ID IS UNDEFINED!");
+                alert("Room ID not found.");
+                return;
+            }
+
+            const url = `/payment/${addressId}/${roomId}/${adults}`;
+            console.log("Redirecting to:", url);
+            window.location.href = url;
+        }
+    </script>
+
+</body>
+
+</html>
