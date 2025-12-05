@@ -883,3 +883,520 @@ UNION ALL SELECT 'audit_log', COUNT(*) FROM audit_log
 UNION ALL SELECT 'booking_audit', COUNT(*) FROM booking_audit;
 
 
+-- new data -- 
+
+
+INSERT INTO country (id, iso_code, name) VALUES
+(5,'FR','France'),
+(6,'DE','Germany'),
+(7,'JP','Japan'),
+(8,'CN','China'),
+(9,'SG','Singapore'),
+(10,'AU','Australia'),
+(11,'CA','Canada'),
+(12,'IT','Italy'),
+(13,'ES','Spain'),
+(14,'BR','Brazil');
+
+INSERT INTO region (id, country_id, name) VALUES
+(5,5,'Paris'),
+(6,6,'Berlin'),
+(7,7,'Tokyo'),
+(8,8,'Beijing'),
+(9,9,'Marina Bay'),
+(10,10,'Sydney'),
+(11,11,'Toronto'),
+(12,12,'Rome'),
+(13,13,'Madrid'),
+(14,14,'Rio de Janeiro');
+
+INSERT INTO city (id, region_id, name, lat, lng, timezone) VALUES
+(5,5,'Paris',48.8566,2.3522,'UTC+01'),
+(6,6,'Berlin',52.52,13.4050,'UTC+01'),
+(7,7,'Tokyo',35.6762,139.6503,'UTC+09'),
+(8,8,'Beijing',39.9042,116.4074,'UTC+08'),
+(9,9,'Singapore',1.3521,103.8198,'UTC+08'),
+(10,10,'Sydney',-33.8688,151.2093,'UTC+10'),
+(11,11,'Toronto',43.6532,-79.3832,'UTC-05'),
+(12,12,'Rome',41.9028,12.4964,'UTC+01'),
+(13,13,'Madrid',40.4168,-3.7038,'UTC+01'),
+(14,14,'Rio de Janeiro',-22.9068,-43.1729,'UTC-03');
+
+INSERT INTO address (id, street, city_id, postal_code, lat, lng) VALUES
+(5,'Champs Elysees',5,'75008',48.8566,2.3522),
+(6,'Unter den Linden',6,'10117',52.52,13.4050),
+(7,'Shinjuku Street',7,'160-0022',35.6762,139.6503),
+(8,'Wangfujing',8,'100006',39.9042,116.4074),
+(9,'Marina Blvd',9,'018989',1.3521,103.8198),
+(10,'George St',10,'2000',-33.8688,151.2093),
+(11,'King St',11,'M5H',43.6532,-79.3832),
+(12,'Via Veneto',12,'00187',41.9028,12.4964),
+(13,'Gran Via',13,'28013',40.4168,-3.7038),
+(14,'Copacabana',14,'22040',-22.9068,-43.1729);
+
+INSERT INTO `user` (user_id, email, password_hash, role, is_active, created_at) VALUES
+
+(6,'david@example.com','hash_david','customer',1,'2025-01-06 00:00:00'),
+(7,'lisa@example.com','hash_lisa','customer',1,'2025-01-07 00:00:00'),
+(8,'mike@example.com','hash_mike','customer',1,'2025-01-08 00:00:00'),
+(9,'nancy@example.com','hash_nancy','customer',1,'2025-01-09 00:00:00'),
+(10,'kevin@example.com','hash_kevin','customer',1,'2025-01-10 00:00:00'),
+(11,'olivia@example.com','hash_olivia','customer',1,'2025-01-11 00:00:00'),
+(12,'chris@example.com','hash_chris','customer',1,'2025-01-12 00:00:00'),
+(13,'sara@example.com','hash_sara','customer',1,'2025-01-13 00:00:00'),
+(14,'tom@example.com','hash_tom','customer',1,'2025-01-14 00:00:00');
+
+
+INSERT INTO user_profile (user_id, first_name, last_name, phone, dob, preferred_language, timezone) VALUES
+(5,'Emily','E','9710000015','1992-05-12','EN','UTC+01'),
+(6,'David','D','9710000016','1989-07-22','EN','UTC+01'),
+(7,'Lisa','L','9710000017','1990-09-14','EN','UTC+09'),
+(8,'Mike','M','9710000018','1985-12-05','EN','UTC+08'),
+(9,'Nancy','N','9710000019','1993-03-11','EN','UTC+08'),
+(10,'Kevin','K','9710000020','1991-06-25','EN','UTC+10'),
+(11,'Olivia','O','9710000021','1988-08-19','EN','UTC-05'),
+(12,'Chris','C','9710000022','1992-10-01','EN','UTC+01'),
+(13,'Sara','S','9710000023','1989-04-20','EN','UTC+01'),
+(14,'Tom','T','9710000024','1990-11-30','EN','UTC-03');
+
+
+INSERT INTO hotel (id, name, slug, star_rating, address_id, main_phone, created_at, status, description, checkin_time, checkout_time, language_support) VALUES
+(5,'Paris Luxury','paris-lux',5,5,'0144445555','2025-01-05 00:00:00','active','Luxury hotel in Paris','15:00:00','12:00:00','EN,FR'),
+(6,'Berlin Grand','berlin-grand',4,6,'0302223333','2025-01-06 00:00:00','active','Grand hotel in Berlin','15:00:00','12:00:00','EN,DE'),
+(7,'Tokyo Stay','tokyo-stay',4,7,'0355556666','2025-01-07 00:00:00','active','Central Tokyo hotel','15:00:00','12:00:00','EN,JP'),
+(8,'Beijing Palace','beijing-palace',5,8,'0101112222','2025-01-08 00:00:00','active','Luxury palace hotel','15:00:00','12:00:00','EN,CN'),
+(9,'Singapore Bay','sg-bay',5,9,'0654445555','2025-01-09 00:00:00','active','Bay view hotel','15:00:00','12:00:00','EN'),
+(10,'Sydney Harbour','sydney-harbour',4,10,'0298887777','2025-01-10 00:00:00','active','Harbour view','15:00:00','12:00:00','EN'),
+(11,'Toronto Downtown','toronto-dt',4,11,'0411222333','2025-01-11 00:00:00','active','Downtown hotel','15:00:00','12:00:00','EN,FR'),
+(12,'Rome Central','rome-central',5,12,'0622333444','2025-01-12 00:00:00','active','Central Rome hotel','15:00:00','12:00:00','EN,IT'),
+(13,'Madrid Elegance','madrid-elegance',4,13,'0344556677','2025-01-13 00:00:00','active','Elegant hotel','15:00:00','12:00:00','EN,ES'),
+(14,'Rio Copacabana','rio-copa',5,14,'0214445555','2025-01-14 00:00:00','active','Copacabana view','15:00:00','12:00:00','EN,PT');
+
+
+INSERT INTO room_type (id, hotel_id, code, name, max_adults, max_children, description, price_per_night) VALUES
+(5,5,'PLX','Paris Luxury Suite',2,1,'Luxury suite with Eiffel view',550.00),
+(6,5,'PLSTD','Paris Standard',2,0,'Standard room with city view',350.00),
+(7,6,'BGDLX','Berlin Deluxe',2,1,'Deluxe Berlin room',400.00),
+(8,6,'BGSTD','Berlin Standard',2,0,'Standard room',300.00),
+(9,7,'TSUITE','Tokyo Suite',3,1,'Spacious suite',450.00),
+(10,7,'TSTD','Tokyo Standard',2,0,'Standard room',320.00),
+(11,8,'BPDLX','Beijing Deluxe',2,1,'Deluxe room with palace view',500.00),
+(12,8,'BPSTD','Beijing Standard',2,0,'Standard room',350.00),
+(13,9,'SBDLX','Singapore Deluxe',2,1,'Bay view deluxe room',480.00),
+(14,9,'SBSTD','Singapore Standard',2,0,'Standard room',330.00);
+
+
+INSERT INTO room (id, room_type_id, room_number, floor, status) VALUES
+(13,5,'501','5','available'),
+(14,5,'502','5','available'),
+(15,5,'503','5','available'),
+(16,6,'401','4','available'),
+(17,6,'402','4','available'),
+(18,6,'403','4','available'),
+(19,7,'301','3','available'),
+(20,7,'302','3','available'),
+(21,7,'303','3','available'),
+(22,8,'201','2','available'),
+(23,8,'202','2','available'),
+(24,8,'203','2','available'),
+(25,9,'101','1','available'),
+(26,9,'102','1','available'),
+(27,9,'103','1','available'),
+(28,10,'201','2','available'),
+(29,10,'202','2','available'),
+(30,10,'203','2','available'),
+(31,11,'301','3','available'),
+(32,11,'302','3','available'),
+(33,11,'303','3','available'),
+(34,12,'401','4','available'),
+(35,12,'402','4','available'),
+(36,12,'403','4','available'),
+(37,13,'501','5','available'),
+(38,13,'502','5','available'),
+(39,13,'503','5','available'),
+(40,14,'401','4','available'),
+(41,14,'402','4','available'),
+(42,14,'403','4','available');
+
+
+INSERT INTO amenity (id, name, description, amenity_type) VALUES
+(5,'Gym','Fully equipped gym','hotel'),
+(6,'Spa','Relaxing spa services','hotel'),
+(7,'Parking','Secure parking','hotel'),
+(8,'Restaurant','In-house restaurant','hotel'),
+(9,'TV','Smart TV in room','room'),
+(10,'Mini Bar','Stocked mini bar','room'),
+(11,'Jacuzzi','Private Jacuzzi','room'),
+(12,'Balcony','Private balcony','room'),
+(13,'Pet Friendly','Pets allowed','hotel'),
+(14,'Laundry Service','Laundry facilities','hotel');
+
+
+INSERT INTO amenity_map (id, amenity_id, entity_type, entity_id) VALUES
+(5,5,'hotel',5),
+(6,6,'hotel',6),
+(7,7,'hotel',7),
+(8,8,'hotel',8),
+(9,9,'room_type',5),
+(10,10,'room_type',6),
+(11,11,'room_type',7),
+(12,12,'room_type',8),
+(13,13,'hotel',9),
+(14,14,'hotel',10);
+
+
+INSERT INTO photo (id, entity_type, entity_id, url, caption, display_order) VALUES
+(9,'hotel',5,'/images/hotel5_paris.jpg','Front',1),
+(10,'hotel',6,'/images/hotel6_berlin.jpg','Lobby',1),
+(11,'hotel',7,'/images/hotel7_tokyo.jpg','Lobby',1),
+(12,'hotel',8,'/images/hotel8_beijing.jpg','Pool',1),
+(13,'hotel',9,'/images/hotel9_singapore.jpg','Sea view',1),
+(14,'hotel',10,'/images/hotel10_sydney.jpg','Harbour view',1),
+(15,'room_type',5,'/images/room_plx.jpg','Paris Luxury Suite',1),
+(16,'room_type',6,'/images/room_plstd.jpg','Paris Standard',1),
+(17,'room_type',7,'/images/room_bgdlx.jpg','Berlin Deluxe',1),
+(18,'room_type',8,'/images/room_bgstd.jpg','Berlin Standard',1),
+(19,'room_type',9,'/images/room_tsuite.jpg','Tokyo Suite',1),
+(20,'room_type',10,'/images/room_tstd.jpg','Tokyo Standard',1),
+(21,'room_type',11,'/images/room_bpdlx.jpg','Beijing Deluxe',1),
+(22,'room_type',12,'/images/room_bpstd.jpg','Beijing Standard',1),
+(23,'room_type',13,'/images/room_sbdlx.jpg','Singapore Deluxe',1),
+(24,'room_type',14,'/images/room_sbstd.jpg','Singapore Standard',1),
+(25,'hotel',11,'/images/hotel11_toronto.jpg','Downtown',1),
+(26,'hotel',12,'/images/hotel12_rome.jpg','Facade',1),
+(27,'hotel',13,'/images/hotel13_madrid.jpg','Entrance',1),
+(28,'hotel',14,'/images/hotel14_rio.jpg','Beach View',1);
+
+
+INSERT INTO rate_plan (id, hotel_id, code, name, prepayment_required, refundable, cancellation_policy_id) VALUES
+(5,5,'PL-FLEX','Paris Flexible',0,1,'cxl_005'),
+(6,5,'PL-NR','Paris Non-Refundable',1,0,'cxl_006'),
+(7,6,'BG-FLEX','Berlin Flexible',0,1,'cxl_007'),
+(8,6,'BG-NR','Berlin Non-Refundable',1,0,'cxl_008'),
+(9,7,'T-FLEX','Tokyo Flexible',0,1,'cxl_009'),
+(10,7,'T-NR','Tokyo Non-Refundable',1,0,'cxl_010'),
+(11,8,'BP-FLEX','Beijing Flexible',0,1,'cxl_011'),
+(12,8,'BP-NR','Beijing Non-Refundable',1,0,'cxl_012'),
+(13,9,'SB-FLEX','Singapore Flexible',0,1,'cxl_013'),
+(14,9,'SB-NR','Singapore Non-Refundable',1,0,'cxl_014');
+
+
+INSERT INTO inventory (id, hotel_id, room_type_id, dt, available_count, closed) VALUES
+(13,5,5,'2025-12-01',5,0),(14,5,5,'2025-12-02',5,0),(15,5,5,'2025-12-03',5,0),
+(16,5,6,'2025-12-01',3,0),(17,5,6,'2025-12-02',3,0),(18,5,6,'2025-12-03',3,0),
+(19,6,7,'2025-12-01',4,0),(20,6,7,'2025-12-02',4,0),(21,6,7,'2025-12-03',4,0),
+(22,6,8,'2025-12-01',2,0),(23,6,8,'2025-12-02',2,0),(24,6,8,'2025-12-03',2,0),
+(25,7,9,'2025-12-01',4,0),(26,7,9,'2025-12-02',4,0),(27,7,9,'2025-12-03',4,0),
+(28,7,10,'2025-12-01',3,0),(29,7,10,'2025-12-02',3,0),(30,7,10,'2025-12-03',3,0),
+(31,8,11,'2025-12-01',5,0),(32,8,11,'2025-12-02',5,0),(33,8,11,'2025-12-03',5,0),
+(34,8,12,'2025-12-01',3,0),(35,8,12,'2025-12-02',3,0),(36,8,12,'2025-12-03',3,0),
+(37,9,13,'2025-12-01',4,0),(38,9,13,'2025-12-02',4,0),(39,9,13,'2025-12-03',4,0),
+(40,9,14,'2025-12-01',2,0),(41,9,14,'2025-12-02',2,0),(42,9,14,'2025-12-03',2,0);
+
+
+INSERT INTO inventory_lock (id, hotel_id, room_type_id, dt, locked_by, reason) VALUES
+(5,5,5,'2026-03-10','ops','maintenance'),
+(6,5,6,'2026-03-15','ops','event block'),
+(7,6,7,'2026-04-01','ops','renovation'),
+(8,6,8,'2026-04-05','ops','conference'),
+(9,7,9,'2026-05-01','ops','maintenance'),
+(10,7,10,'2026-05-03','ops','event block'),
+(11,8,11,'2026-06-01','ops','renovation'),
+(12,8,12,'2026-06-05','ops','conference'),
+(13,9,13,'2026-07-01','ops','maintenance'),
+(14,9,14,'2026-07-05','ops','event block');
+
+
+INSERT INTO bookings (id, user_id, hotel_id, booking_reference, checkin_date, checkout_date, total_amount, currency, status, created_at) VALUES
+(5,1,5,'PL10005','2025-12-10','2025-12-12',1500.00,'EUR','confirmed','2025-11-05 10:00:00'),
+(6,2,6,'BG10006','2025-12-15','2025-12-17',1800.00,'EUR','confirmed','2025-11-06 11:00:00'),
+(7,3,7,'T10007','2025-12-20','2025-12-22',2000.00,'JPY','confirmed','2025-11-07 12:00:00'),
+(8,4,8,'BP10008','2025-12-25','2025-12-27',2200.00,'CNY','confirmed','2025-11-08 13:00:00'),
+(9,1,9,'SB10009','2025-12-28','2025-12-30',2500.00,'SGD','confirmed','2025-11-09 14:00:00'),
+(10,2,10,'SY10010','2025-12-30','2026-01-02',3000.00,'AUD','confirmed','2025-11-10 15:00:00'),
+(11,3,11,'TO10011','2026-01-05','2026-01-07',1700.00,'CAD','confirmed','2025-11-11 16:00:00'),
+(12,4,12,'RO10012','2026-01-10','2026-01-12',1900.00,'EUR','confirmed','2025-11-12 17:00:00'),
+(13,1,13,'MA10013','2026-01-15','2026-01-17',2100.00,'EUR','confirmed','2025-11-13 18:00:00'),
+(14,2,14,'RI10014','2026-01-20','2026-01-22',2300.00,'BRL','confirmed','2025-11-14 19:00:00');
+
+
+INSERT INTO booking_room (id, booking_id, room_type_id, rate_plan_id, price_per_night) VALUES
+(5,5,5,5,750.00),
+(6,6,6,7,900.00),
+(7,7,7,9,1000.00),
+(8,8,8,11,1100.00),
+(9,9,9,13,1250.00),
+(10,10,10,14,1500.00),
+(11,11,11,12,850.00),
+(12,12,12,12,950.00),
+(13,13,13,13,1050.00),
+(14,14,14,14,1150.00);
+
+
+INSERT INTO booking_payment (id, booking_id, provider_transaction_id, amount, status, method, created_at) VALUES
+(5,5,'TXN-PL-5',1500.00,'success','card','2025-11-05 10:05:00'),
+(6,6,'TXN-BG-6',1800.00,'success','card','2025-11-06 11:05:00'),
+(7,7,'TXN-T-7',2000.00,'success','card','2025-11-07 12:05:00'),
+(8,8,'TXN-BP-8',2200.00,'success','card','2025-11-08 13:05:00'),
+(9,9,'TXN-SB-9',2500.00,'success','card','2025-11-09 14:05:00'),
+(10,10,'TXN-SY-10',3000.00,'success','card','2025-11-10 15:05:00'),
+(11,11,'TXN-TO-11',1700.00,'success','card','2025-11-11 16:05:00'),
+(12,12,'TXN-RO-12',1900.00,'success','card','2025-11-12 17:05:00'),
+(13,13,'TXN-MA-13',2100.00,'success','card','2025-11-13 18:05:00'),
+(14,14,'TXN-RI-14',2300.00,'success','card','2025-11-14 19:05:00');
+
+
+INSERT INTO refund (id, booking_payment_id, amount, reason, status, created_at) VALUES
+(5,5,0.00,'','processing','2025-11-15 10:00:00'),
+(6,6,0.00,'','processing','2025-11-16 10:00:00'),
+(7,7,0.00,'','processing','2025-11-17 10:00:00'),
+(8,8,0.00,'','processing','2025-11-18 10:00:00'),
+(9,9,0.00,'','processing','2025-11-19 10:00:00'),
+(10,10,0.00,'','processing','2025-11-20 10:00:00'),
+(11,11,0.00,'','processing','2025-11-21 10:00:00'),
+(12,12,0.00,'','processing','2025-11-22 10:00:00'),
+(13,13,0.00,'','processing','2025-11-23 10:00:00'),
+(14,14,0.00,'','processing','2025-11-24 10:00:00');
+
+
+INSERT INTO invoice (id, booking_id, invoice_number, pdf_url, issued_at, total_amount) VALUES
+(5,5,'INV-1005','/invoices/inv-1005.pdf','2025-11-05 11:00:00',1500.00),
+(6,6,'INV-1006','/invoices/inv-1006.pdf','2025-11-06 12:00:00',1800.00),
+(7,7,'INV-1007','/invoices/inv-1007.pdf','2025-11-07 13:00:00',2000.00),
+(8,8,'INV-1008','/invoices/inv-1008.pdf','2025-11-08 14:00:00',2200.00),
+(9,9,'INV-1009','/invoices/inv-1009.pdf','2025-11-09 15:00:00',2500.00),
+(10,10,'INV-1010','/invoices/inv-1010.pdf','2025-11-10 16:00:00',3000.00),
+(11,11,'INV-1011','/invoices/inv-1011.pdf','2025-11-11 17:00:00',1700.00),
+(12,12,'INV-1012','/invoices/inv-1012.pdf','2025-11-12 18:00:00',1900.00),
+(13,13,'INV-1013','/invoices/inv-1013.pdf','2025-11-13 19:00:00',2100.00),
+(14,14,'INV-1014','/invoices/inv-1014.pdf','2025-11-14 20:00:00',2300.00);
+
+
+INSERT INTO review (id, user_id, hotel_id, rating, title, body, created_at, status) VALUES
+(5,1,5,5,'Excellent Stay','Loved the service and ambiance','2025-11-05 14:00:00','published'),
+(6,2,6,4,'Very Good','Staff were friendly and helpful','2025-11-06 14:00:00','published'),
+(7,3,7,5,'Outstanding','Perfect location and facilities','2025-11-07 14:00:00','published'),
+(8,4,8,4,'Good Experience','Comfortable stay','2025-11-08 14:00:00','published'),
+(9,1,9,5,'Highly Recommend','Great food and rooms','2025-11-09 14:00:00','published'),
+(10,2,10,3,'Average','Room service slow','2025-11-10 14:00:00','published'),
+(11,3,11,4,'Nice','Pleasant stay','2025-11-11 14:00:00','published'),
+(12,4,12,5,'Excellent','Fantastic view','2025-11-12 14:00:00','published'),
+(13,1,13,4,'Good','Friendly staff','2025-11-13 14:00:00','published'),
+(14,2,14,5,'Amazing','Loved everything','2025-11-14 14:00:00','published');
+
+INSERT INTO saved_list (id, user_id, name, list_type, created_at) VALUES
+(5,1,'John Favorites','wishlist','2025-11-05 09:00:00'),
+(6,2,'Alice Wishlist','wishlist','2025-11-06 09:00:00'),
+(7,3,'Bob Compare','compare','2025-11-07 09:00:00'),
+(8,4,'Admin Wishlist','wishlist','2025-11-08 09:00:00'),
+(9,1,'John Compare','compare','2025-11-09 09:00:00'),
+(10,2,'Alice Favorites','wishlist','2025-11-10 09:00:00'),
+(11,3,'Bob Watchlist','wishlist','2025-11-11 09:00:00'),
+(12,4,'Admin Compare','compare','2025-11-12 09:00:00'),
+(13,1,'John Watchlist','wishlist','2025-11-13 09:00:00'),
+(14,2,'Alice Watchlist','wishlist','2025-11-14 09:00:00');
+
+
+INSERT INTO saved_list_item (id, saved_list_id, hotel_id, added_at) VALUES
+(5,5,5,'2025-11-05 09:05:00'),
+(6,6,6,'2025-11-06 09:05:00'),
+(7,7,7,'2025-11-07 09:05:00'),
+(8,8,8,'2025-11-08 09:05:00'),
+(9,9,9,'2025-11-09 09:05:00'),
+(10,10,10,'2025-11-10 09:05:00'),
+(11,11,11,'2025-11-11 09:05:00'),
+(12,12,12,'2025-11-12 09:05:00'),
+(13,13,13,'2025-11-13 09:05:00'),
+(14,14,14,'2025-11-14 09:05:00');
+
+
+INSERT INTO support_ticket (id, user_id, subject, status, created_at) VALUES
+(5,1,'Room not ready','open','2025-11-05 10:00:00'),
+(6,2,'Extra towels needed','open','2025-11-06 10:00:00'),
+(7,3,'WiFi issue','open','2025-11-07 10:00:00'),
+(8,4,'Noise complaint','open','2025-11-08 10:00:00'),
+(9,1,'Billing discrepancy','open','2025-11-09 10:00:00'),
+(10,2,'Request late checkout','open','2025-11-10 10:00:00'),
+(11,3,'TV not working','open','2025-11-11 10:00:00'),
+(12,4,'Mini-bar refill','open','2025-11-12 10:00:00'),
+(13,1,'Lost key card','open','2025-11-13 10:00:00'),
+(14,2,'Room service delay','open','2025-11-14 10:00:00');
+
+
+INSERT INTO support_comment (id, ticket_id, user_id, comment, created_at) VALUES
+(5,5,2,'We will send staff to fix','2025-11-05 10:10:00'),
+(6,6,1,'Towels will be delivered shortly','2025-11-06 10:10:00'),
+(7,7,4,'IT team is checking','2025-11-07 10:10:00'),
+(8,8,3,'Noise complaint noted','2025-11-08 10:10:00'),
+(9,9,2,'Billing team notified','2025-11-09 10:10:00'),
+(10,10,1,'Late checkout approved','2025-11-10 10:10:00'),
+(11,11,4,'TV fixed','2025-11-11 10:10:00'),
+(12,12,3,'Mini-bar refilled','2025-11-12 10:10:00'),
+(13,13,2,'Key card replaced','2025-11-13 10:10:00'),
+(14,14,1,'Room service dispatched','2025-11-14 10:10:00');
+
+
+INSERT INTO notification (id, user_id, type, title, body, data, delivered, read_at, created_at) VALUES
+(5,1,'booking','Booking Reminder','Your upcoming booking', JSON_OBJECT('booking_id',5),0,NULL,'2025-11-05 10:20:00'),
+(6,2,'promo','Special Offer','Use SPRING20', JSON_OBJECT('code','SPRING20'),0,NULL,'2025-11-06 10:20:00'),
+(7,3,'info','System Update','Site maintenance notice', JSON_OBJECT(),0,NULL,'2025-11-07 10:20:00'),
+(8,4,'reminder','Booking Soon','Your stay is near', JSON_OBJECT('booking_id',8),0,NULL,'2025-11-08 10:20:00'),
+(9,1,'booking','Booking Confirmed','Your booking is confirmed', JSON_OBJECT('booking_id',9),1,NULL,'2025-11-09 10:20:00'),
+(10,2,'promo','Holiday Offer','Use HOLIDAY15', JSON_OBJECT('code','HOLIDAY15'),0,NULL,'2025-11-10 10:20:00'),
+(11,3,'info','Welcome','Thanks for joining', JSON_OBJECT(),0,NULL,'2025-11-11 10:20:00'),
+(12,4,'reminder','Check-in Reminder','Check-in tomorrow', JSON_OBJECT('booking_id',12),0,NULL,'2025-11-12 10:20:00'),
+(13,1,'booking','Booking Confirmed','Your booking is confirmed', JSON_OBJECT('booking_id',13),1,NULL,'2025-11-13 10:20:00'),
+(14,2,'promo','Special Discount','Use NEWYEAR20', JSON_OBJECT('code','NEWYEAR20'),0,NULL,'2025-11-14 10:20:00');
+
+
+INSERT INTO push_token (id, user_id, token, platform, created_at) VALUES
+(5,1,'token_5','android','2025-11-05 09:30:00'),
+(6,2,'token_6','ios','2025-11-06 09:30:00'),
+(7,3,'token_7','web','2025-11-07 09:30:00'),
+(8,4,'token_8','android','2025-11-08 09:30:00'),
+(9,1,'token_9','android','2025-11-09 09:30:00'),
+(10,2,'token_10','ios','2025-11-10 09:30:00'),
+(11,3,'token_11','web','2025-11-11 09:30:00'),
+(12,4,'token_12','android','2025-11-12 09:30:00'),
+(13,1,'token_13','android','2025-11-13 09:30:00'),
+(14,2,'token_14','ios','2025-11-14 09:30:00');
+
+
+INSERT INTO housekeeping (id, room_id, room_type_id, date, assigned_staff, status, tasks) VALUES
+(5,2,2,'2025-12-06','staff5','pending', JSON_ARRAY('clean_room','replace_sheets')),
+(6,3,3,'2025-12-07','staff6','scheduled', JSON_ARRAY('inspect','restock')),
+(7,5,5,'2025-12-08','staff7','pending', JSON_ARRAY('clean','restock')),
+(8,6,6,'2025-12-09','staff8','pending', JSON_ARRAY('clean_room')),
+(9,8,8,'2025-12-10','staff9','scheduled', JSON_ARRAY('restock')),
+(10,9,9,'2025-12-11','staff10','pending', JSON_ARRAY('clean_room')),
+(11,11,11,'2025-12-12','staff11','pending', JSON_ARRAY('replace_sheets')),
+(12,12,12,'2025-12-13','staff12','scheduled', JSON_ARRAY('inspect')),
+(13,13,13,'2025-12-14','staff13','pending', JSON_ARRAY('clean','restock')),
+(14,14,14,'2025-12-15','staff14','pending', JSON_ARRAY('clean_room'));
+
+
+INSERT INTO shift_assignment (id, shift_name, staff_identifier, date, notes) VALUES
+(5,'Morning','shift_m2','2025-11-06','start 08:00'),
+(6,'Afternoon','shift_a2','2025-11-06','start 12:00'),
+(7,'Evening','shift_e2','2025-11-06','start 16:00'),
+(8,'Night','shift_n2','2025-11-06','start 22:00'),
+(9,'Morning','shift_m3','2025-11-07','start 08:00'),
+(10,'Afternoon','shift_a3','2025-11-07','start 12:00'),
+(11,'Evening','shift_e3','2025-11-07','start 16:00'),
+(12,'Night','shift_n3','2025-11-07','start 22:00'),
+(13,'Morning','shift_m4','2025-11-08','start 08:00'),
+(14,'Afternoon','shift_a4','2025-11-08','start 12:00');
+
+
+INSERT INTO vendor (id, name, contact_info, contract_id, contract_start_date, contract_end_date, contract_terms) VALUES
+(5,'LaundryExpress','phone:555444333','VC-1005','2025-02-01','2025-12-31','laundry services'),
+(6,'FreshFruits','phone:444333222','VC-1006','2025-03-01','2025-12-31','fruit supply'),
+(7,'TechSupport','phone:333222111','VC-1007','2025-04-01','2025-12-31','IT support'),
+(8,'DecorPlus','phone:222111000','VC-1008','2025-05-01','2025-12-31','decor and supplies'),
+(9,'CleanFast','phone:111000999','VC-1009','2025-06-01','2025-12-31','cleaning services'),
+(10,'Foodies','phone:000999888','VC-1010','2025-07-01','2025-12-31','food supply'),
+(11,'SecureIt','phone:999888777','VC-1011','2025-08-01','2025-12-31','security services'),
+(12,'LaundryKing','phone:888777666','VC-1012','2025-09-01','2025-12-31','laundry services'),
+(13,'SnackTime','phone:777666555','VC-1013','2025-10-01','2025-12-31','snack supply'),
+(14,'FlowerWorld','phone:666555444','VC-1014','2025-11-01','2025-12-31','floral decoration');
+
+
+INSERT INTO availability_req (id, user_id, hotel_id, date_from, date_to, num_rooms, status) VALUES
+(5,1,5,'2026-05-01','2026-05-03',1,'open'),
+(6,2,6,'2026-05-05','2026-05-07',2,'open'),
+(7,3,7,'2026-05-10','2026-05-12',1,'open'),
+(8,4,8,'2026-05-15','2026-05-16',1,'open'),
+(9,1,9,'2026-06-01','2026-06-03',2,'open'),
+(10,2,10,'2026-06-05','2026-06-07',1,'open'),
+(11,3,11,'2026-06-10','2026-06-12',2,'open'),
+(12,4,12,'2026-06-15','2026-06-17',1,'open'),
+(13,1,13,'2026-07-01','2026-07-03',1,'open'),
+(14,2,14,'2026-07-05','2026-07-07',2,'open');
+
+
+INSERT INTO analytics_event (id, user_id, event_type, metadata, created_at) VALUES
+(5,1,'hotel_view', JSON_OBJECT('hotel_id',5), '2025-11-05 10:30:00'),
+(6,2,'search', JSON_OBJECT('q','spa'), '2025-11-06 10:30:00'),
+(7,3,'booking_click', JSON_OBJECT('hotel_id',7), '2025-11-07 10:30:00'),
+(8,4,'page_view', JSON_OBJECT('page','offers'), '2025-11-08 10:30:00'),
+(9,1,'hotel_view', JSON_OBJECT('hotel_id',9), '2025-11-09 10:30:00'),
+(10,2,'search', JSON_OBJECT('q','downtown'), '2025-11-10 10:30:00'),
+(11,3,'booking_click', JSON_OBJECT('hotel_id',11), '2025-11-11 10:30:00'),
+(12,4,'page_view', JSON_OBJECT('page','contact'), '2025-11-12 10:30:00'),
+(13,1,'hotel_view', JSON_OBJECT('hotel_id',13), '2025-11-13 10:30:00'),
+(14,2,'search', JSON_OBJECT('q','pool'), '2025-11-14 10:30:00');
+
+
+INSERT INTO setting (`key`, `value`) VALUES
+('hotel.default_star', JSON_QUOTE('3')),
+('booking.max_rooms', JSON_QUOTE('5')),
+('notifications.enable_push', JSON_QUOTE('true')),
+('analytics.track_events', JSON_QUOTE('true'));
+
+
+INSERT INTO seo_data (id, entity_type, entity_id, title, description, keywords) VALUES
+(5,'hotel',5,'Hotel 5 - Luxury Stay','Book Hotel 5 with comfort','hotel,luxury,5'),
+(6,'hotel',6,'Hotel 6 - Relax','Comfortable stay at Hotel 6','hotel,relax,6'),
+(7,'hotel',7,'Hotel 7 - City Center','Stay at Hotel 7 near downtown','hotel,city,7'),
+(8,'hotel',8,'Hotel 8 - Cozy','Cozy Hotel 8 experience','hotel,cozy,8'),
+(9,'hotel',9,'Hotel 9 - Scenic','Hotel 9 with scenic views','hotel,scenic,9'),
+(10,'hotel',10,'Hotel 10 - Comfort','Hotel 10 comfortable stay','hotel,comfort,10'),
+(11,'hotel',11,'Hotel 11 - Elite','Elite services at Hotel 11','hotel,elite,11'),
+(12,'hotel',12,'Hotel 12 - Central','Central location Hotel 12','hotel,central,12'),
+(13,'hotel',13,'Hotel 13 - Premium','Premium experience Hotel 13','hotel,premium,13'),
+(14,'hotel',14,'Hotel 14 - Modern','Modern amenities at Hotel 14','hotel,modern,14');
+
+
+INSERT INTO audit_log (id, entity_type, entity_id, action, performed_by, payload, created_at) VALUES
+(5,'hotel',5,'create',1, JSON_OBJECT('note','seeded hotel 5'),'2025-11-05 10:40:00'),
+(6,'booking',2,'update',2, JSON_OBJECT('note','seeded booking 2'),'2025-11-06 10:41:00'),
+(7,'user',3,'create',3, JSON_OBJECT('note','seeded user 3'),'2025-11-07 10:42:00'),
+(8,'inventory',4,'import',4, JSON_OBJECT('note','seeded inventory 4'),'2025-11-08 10:43:00'),
+(9,'hotel',6,'update',1, JSON_OBJECT('note','seeded hotel 6'),'2025-11-09 10:44:00'),
+(10,'booking',3,'update',2, JSON_OBJECT('note','seeded booking 3'),'2025-11-10 10:45:00'),
+(11,'user',4,'create',3, JSON_OBJECT('note','seeded user 4'),'2025-11-11 10:46:00'),
+(12,'inventory',5,'import',4, JSON_OBJECT('note','seeded inventory 5'),'2025-11-12 10:47:00'),
+(13,'hotel',7,'create',1, JSON_OBJECT('note','seeded hotel 7'),'2025-11-13 10:48:00'),
+(14,'booking',4,'update',2, JSON_OBJECT('note','seeded booking 4'),'2025-11-14 10:49:00');
+
+
+INSERT INTO booking_audit (id, booking_id, action, payload, created_by, created_at) VALUES
+(5,1,'updated', JSON_OBJECT('note','audit entry 5'),1,'2025-11-05 10:50:00'),
+(6,2,'updated', JSON_OBJECT('note','audit entry 6'),2,'2025-11-06 10:50:00'),
+(7,3,'updated', JSON_OBJECT('note','audit entry 7'),3,'2025-11-07 10:50:00'),
+(8,4,'updated', JSON_OBJECT('note','audit entry 8'),4,'2025-11-08 10:50:00'),
+(9,5,'created', JSON_OBJECT('note','audit entry 9'),1,'2025-11-09 10:50:00'),
+(10,6,'created', JSON_OBJECT('note','audit entry 10'),2,'2025-11-10 10:50:00'),
+(11,7,'created', JSON_OBJECT('note','audit entry 11'),3,'2025-11-11 10:50:00'),
+(12,8,'created', JSON_OBJECT('note','audit entry 12'),4,'2025-11-12 10:50:00'),
+(13,9,'updated', JSON_OBJECT('note','audit entry 13'),1,'2025-11-13 10:50:00'),
+(14,10,'updated', JSON_OBJECT('note','audit entry 14'),2,'2025-11-14 10:50:00');
+
+
+INSERT INTO review (user_id, hotel_id, rating, title, body, created_at, status)
+VALUES
+-- Positive Reviews
+(1, 2, 5, 'Exceptional Service', 'Staff went out of their way to help.', '2025-11-22 10:20:00', 'published'),
+(2, 3, 4, 'Comfortable Stay', 'Rooms were cozy and well maintained.', '2025-11-22 11:10:00', 'published'),
+(3, 5, 5, 'Amazing Food', 'The buffet was top-notch with great variety.', '2025-11-22 12:00:00', 'published'),
+(4, 7, 4, 'Pleasant Experience', 'Peaceful location and friendly staff.', '2025-11-22 13:45:00', 'published'),
+(1, 9, 5, 'Loved It', 'Beautiful interiors and excellent room service.', '2025-11-22 15:30:00', 'published'),
+(2, 11, 4, 'Very Good', 'Clean rooms and great view from the balcony.', '2025-11-22 16:50:00', 'published'),
+(3, 12, 5, 'Highly Recommended', 'Everything was perfect from check-in to checkout.', '2025-11-22 17:40:00', 'published'),
+(4, 13, 4, 'Good for Families', 'Spacious rooms and helpful staff.', '2025-11-22 18:20:00', 'published'),
+(1, 14, 5, 'Fantastic Stay', 'Would definitely visit again!', '2025-11-22 19:00:00', 'published'),
+(2, 1, 4, 'Value for Money', 'Affordable and comfortable stay.', '2025-11-22 20:10:00', 'published'),
+
+-- Negative Reviews
+(3, 2, 2, 'Disappointing', 'Room was not cleaned properly before arrival.', '2025-11-23 09:30:00', 'published'),
+(4, 3, 1, 'Terrible Experience', 'Extremely noisy and dirty.', '2025-11-23 10:45:00', 'published'),
+(1, 4, 2, 'Not Satisfied', 'AC was faulty and staff was unresponsive.', '2025-11-23 11:20:00', 'published'),
+(2, 6, 3, 'Average', 'Expected better for the price.', '2025-11-23 12:10:00', 'published'),
+(3, 8, 2, 'Could Be Better', 'Found bugs in the bathroom.', '2025-11-23 13:05:00', 'published'),
+(4, 10, 1, 'Worst Stay', 'Bedsheets were dirty and smelly.', '2025-11-23 14:00:00', 'published'),
+(1, 11, 3, 'Just Okay', 'Nothing special, but not too bad either.', '2025-11-23 15:10:00', 'published'),
+(2, 12, 2, 'Overrated', 'Staff was rude and unprofessional.', '2025-11-23 16:15:00', 'published'),
+(3, 13, 1, 'Very Bad', 'Bathroom was leaking and poorly maintained.', '2025-11-23 17:00:00', 'published'),
+(4, 14, 2, 'Below Expectations', 'Photos online were misleading.', '2025-11-23 18:20:00', 'published');
+
+
