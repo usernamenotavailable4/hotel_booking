@@ -137,6 +137,7 @@ CREATE TABLE room_type (
   max_adults INT DEFAULT 2,
   max_children INT DEFAULT 0,
   description TEXT,
+  price_per_night int(10),
   FOREIGN KEY (hotel_id) REFERENCES hotel(id) ON DELETE CASCADE,
   INDEX (hotel_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -565,11 +566,11 @@ INSERT INTO hotel (id, name, slug, star_rating, address_id, main_phone, created_
 -- -----------------------------
 -- 8) ROOM_TYPE (4)
 -- -----------------------------
-INSERT INTO room_type (id, hotel_id, code, name, max_adults, max_children, description) VALUES
-(1,1,'MB-DLX','Marina Deluxe',2,1,'Sea view deluxe room'),
-(2,1,'MB-STD','Marina Standard',2,0,'Standard marina room'),
-(3,2,'KC-SUITE','Kochi Suite',3,1,'Spacious suite with balcony'),
-(4,3,'LC-STD','London Standard',2,0,'Comfortable standard room');
+INSERT INTO room_type (id, hotel_id, code, name, max_adults, max_children, description,price_per_night) VALUES
+(1,1,'MB-DLX','Marina Deluxe',2,1,'Sea view deluxe room',2500),
+(2,1,'MB-STD','Marina Standard',2,0,'Standard marina room',9000),
+(3,2,'KC-SUITE','Kochi Suite',3,1,'Spacious suite with balcony',5000),
+(4,3,'LC-STD','London Standard',2,0,'Comfortable standard room',6000);
 
 -- -----------------------------
 -- 9) ROOM (12) -> 3 rooms per room_type
@@ -948,7 +949,6 @@ INSERT INTO `user` (user_id, email, password_hash, role, is_active, created_at) 
 
 
 INSERT INTO user_profile (user_id, first_name, last_name, phone, dob, preferred_language, timezone) VALUES
-(5,'Emily','E','9710000015','1992-05-12','EN','UTC+01'),
 (6,'David','D','9710000016','1989-07-22','EN','UTC+01'),
 (7,'Lisa','L','9710000017','1990-09-14','EN','UTC+09'),
 (8,'Mike','M','9710000018','1985-12-05','EN','UTC+08'),
@@ -1398,5 +1398,4 @@ VALUES
 (2, 12, 2, 'Overrated', 'Staff was rude and unprofessional.', '2025-11-23 16:15:00', 'published'),
 (3, 13, 1, 'Very Bad', 'Bathroom was leaking and poorly maintained.', '2025-11-23 17:00:00', 'published'),
 (4, 14, 2, 'Below Expectations', 'Photos online were misleading.', '2025-11-23 18:20:00', 'published');
-
 
